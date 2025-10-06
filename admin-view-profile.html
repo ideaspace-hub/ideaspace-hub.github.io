@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin View Profile - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 250px; background: #070b1a; height: 100%; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar h2 { color: var(--primary-color); text-align: center; }
+        .sidebar-nav a { display: block; color: var(--accent-color); text-decoration: none; padding: 15px; margin: 5px 0; border-radius: 5px; }
+        .main-content { flex-grow: 1; padding: 30px; height: 100vh; overflow-y: auto; }
+        .profile-header { display: flex; align-items: center; gap: 30px; background: var(--main-bg); padding: 30px; border-radius: 15px; margin-bottom: 30px; border: 1px solid var(--border-color); }
+        .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
+        .profile-info h2 { margin: 0; font-size: 2rem; color: var(--text-color-light); }
+        .profile-info p { color: var(--text-color-dark); }
+        .section { background: var(--main-bg); padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid var(--border-color); }
+        .section h3 { color: var(--accent-color); margin-top: 0; border-bottom: 1px solid rgba(0, 230, 255, 0.2); padding-bottom: 10px; }
+        .remark-card { background: rgba(248, 81, 73, 0.1); border: 1px solid var(--error-color); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        textarea { width: 100%; min-height: 80px; background: #24292f; color: var(--text-color-light); padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; }
+        button { padding: 10px 20px; background: var(--button-blue); color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .timeline { list-style-type: none; padding-left: 20px; position: relative; }
+        .timeline:before { content: ''; position: absolute; left: 5px; top: 0; bottom: 0; width: 2px; background: rgba(0, 230, 255, 0.2); }
+        .timeline-item { margin-bottom: 20px; position: relative; }
+        .timeline-item:before { content: ''; position: absolute; left: -15px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--primary-color); border: 2px solid var(--dark-bg); }
+        .timeline-content { background: #24292f; padding: 15px; border-radius: 8px; }
+        .timeline-content .title { font-weight: bold; color: var(--accent-color); }
+        .timeline-content .timestamp { display: block; font-size: 0.8rem; color: var(--text-color-dark); margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2><i class="fas fa-shield-alt"></i> Admin</h2>
+        <nav class="sidebar-nav">
+            <a href="admin-dashboard.html"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div id="profileContainer">
+            <p>Loading user profile...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        const profileContainer = document.getElementById('profileContainer');
+        const viewUserUid = new URLSearchParams(window.location.search).get('uid');
+
+        window.onload = () => {
+            if (viewUserUid) {
+                // Corrected logic: Use onAuthStateChanged to check for an active user session.
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        // If a user is logged in, check if they are an admin.
+                        db.collection('admins').doc(user.uid).get().then(doc => {
+                            if (doc.exists) {
+                                // If they are an admin, proceed to load the profile.
+                                loadUserProfile();
+                            } else {
+                                // If logged in but not an admin, show access denied.
+                                profileContainer.innerHTML = "<h2>Access Denied: You are not an admin.</h2>";
+                            }
+                        });
+                    } else {
+                        // If no user is logged in at all, redirect to the admin login page.
+                        window.location.replace("admin-login.html");
+                    }
+                });
+            } else {
+                profileContainer.innerHTML = "<h2>Error: No user UID specified.</h2>";
+            }
+        };
+
+        async function loadUserProfile() {
+            try {
+                const userDoc = await db.collection('users').doc(viewUserUid).get();
+                if (!userDoc.exists) throw new Error("User not found.");
+                const userData = userDoc.data();
+                
+                let timelineEvents = [];
+
+                if (userData.createdAt && userData.createdAt.toDate) {
+                    timelineEvents.push({
+                        timestamp: userData.createdAt.toDate(),
+                        title: "Account Created",
+                        details: `User registered with email ${userData.email}.`
+                    });
+                }
+
+                const createdProjectsSnap = await db.collection('ideas').where('uid', '==', viewUserUid).get();
+                createdProjectsSnap.forEach(doc => {
+                    const project = doc.data();
+                    if (project.createdAt && project.createdAt.toDate) {
+                         timelineEvents.push({
+                            timestamp: project.createdAt.toDate(),
+                            title: "Project Posted",
+                            details: `Created a new project: <strong>${project.title}</strong>.`
+                        });
+                    }
+                });
+
+                const applicationsSnap = await db.collection('applications').where('uid', '==', viewUserUid).get();
+                for (const doc of applicationsSnap.docs) {
+                    const app = doc.data();
+                    const projectDoc = await db.collection('ideas').doc(app.projectId).get();
+                    const projectTitle = projectDoc.exists ? projectDoc.data().title : 'Unknown Project';
+                    if (app.createdAt && app.createdAt.toDate) {
+                         timelineEvents.push({
+                            timestamp: app.createdAt.toDate(),
+                            title: `Applied to Project`,
+                            details: `Applied for role of <strong>${app.role}</strong> in project <strong>${projectTitle}</strong>. Status: ${app.status}.`
+                        });
+                    }
+                };
+                
+                const complaintsSnap = await db.collection('complaints').where('uid', '==', viewUserUid).get();
+                complaintsSnap.forEach(doc => {
+                    const complaint = doc.data();
+                    if (complaint.timestamp && complaint.timestamp.toDate) {
+                        timelineEvents.push({
+                            timestamp: complaint.timestamp.toDate(),
+                            title: "Complaint Filed",
+                            details: `Submitted a complaint: "${complaint.message.substring(0, 100)}..."`
+                        });
+                    }
+                });
+                
+                const requestsSnap = await db.collection('featureRequests').where('uid', '==', viewUserUid).get();
+                 requestsSnap.forEach(doc => {
+                    const request = doc.data();
+                    if (request.timestamp && request.timestamp.toDate) {
+                         timelineEvents.push({
+                            timestamp: request.timestamp.toDate(),
+                            title: "Feature Requested",
+                            details: `Submitted a request: "${request.message.substring(0, 100)}..."`
+                        });
+                    }
+                });
+
+                timelineEvents.sort((a, b) => b.timestamp - a.timestamp);
+
+                let timelineHTML = '';
+                timelineEvents.forEach(event => {
+                    timelineHTML += `
+                        <li class="timeline-item">
+                            <div class="timeline-content">
+                                <p class="title">${event.title}</p>
+                                <p>${event.details}</p>
+                                <span class="timestamp">${event.timestamp.toLocaleString()}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+
+                let remarksHTML = '';
+                if (userData.remarks && userData.remarks.length > 0) {
+                    userData.remarks.forEach(remark => {
+                        const date = remark.removedAt ? remark.removedAt.toDate().toLocaleDateString() : 'N/A';
+                        remarksHTML += `<div class="remark-card"><p>Removed from project <strong>"${remark.projectName}"</strong> due to ${remark.reason} on ${date}.</p></div>`;
+                    });
+                } else {
+                    remarksHTML = "<p>No remarks on this profile.</p>";
+                }
+                
+                profileContainer.innerHTML = `
+                    <div class="profile-header">
+                        <img src="${userData.photoURL || 'https://placehold.co/120x120/161b22/00e6ff?text=' + (userData.displayName || 'U').charAt(0)}" alt="Profile Pic" class="profile-pic">
+                        <div class="profile-info">
+                            <h2>${userData.displayName}</h2>
+                            <p>@${userData.username} | ${userData.email}</p>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h3><i class="fas fa-info-circle"></i> Bio</h3>
+                        <p>${userData.bio || 'No bio provided.'}</p>
+                    </div>
+                    <div class="section">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Profile Remarks</h3>
+                        ${remarksHTML}
+                    </div>
+                    <div class="section">
+                        <h3><i class="fas fa-plus-circle"></i> Add a Remark</h3>
+                        <textarea id="remarkText" placeholder="Add an administrative remark to this user's profile..."></textarea>
+                        <button onclick="addRemark()">Add Remark</button>
+                    </div>
+                    <div class="section">
+                        <h3><i class="fas fa-history"></i> User Activity Timeline</h3>
+                        <ul class="timeline">${timelineHTML || '<li>No activity to display.</li>'}</ul>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error("Error loading user profile:", error);
+                profileContainer.innerHTML = `<h2>Error loading profile: ${error.message}</h2>`;
+            }
+        }
+
+        async function addRemark() {
+            const remarkText = document.getElementById('remarkText').value.trim();
+            if (!remarkText) {
+                alert("Remark cannot be empty.");
+                return;
+            }
+            if (!confirm("Are you sure you want to add this permanent remark to the user's profile?")) return;
+
+            try {
+                const userRef = db.collection('users').doc(viewUserUid);
+                await userRef.update({
+                    remarks: firebase.firestore.FieldValue.arrayUnion({
+                        projectName: "Administrative Action",
+                        reason: remarkText,
+                        removedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    })
+                });
+                alert("Remark added successfully.");
+                loadUserProfile();
+            } catch (error) {
+                console.error("Error adding remark:", error);
+                alert("Failed to add remark.");
+            }
+        }
+    </script>
+</body>
+</html>

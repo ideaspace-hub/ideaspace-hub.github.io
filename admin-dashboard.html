@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --warn-color: #ffc107;
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 250px; background: #070b1a; height: 100%; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar h2 { color: var(--primary-color); text-align: center; margin-bottom: 30px; }
+        .sidebar-nav a { display: block; color: var(--accent-color); text-decoration: none; padding: 15px; margin: 5px 0; border-radius: 5px; transition: background-color 0.2s; }
+        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(0, 230, 255, 0.1); }
+        .sidebar-nav a.exit-link { margin-top: auto; }
+        .main-content { flex-grow: 1; padding: 30px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-card { background: var(--main-bg); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid var(--border-color); }
+        .stat-card .count { font-size: 2.5rem; color: var(--primary-color); font-weight: bold; }
+        .stat-card .label { margin-top: 10px; color: var(--text-color-dark); }
+        .search-bar { width: 100%; padding: 12px; margin-bottom: 20px; background: #24292f; border: 1px solid var(--border-color); border-radius: 5px; color: var(--text-color-light); font-size: 1rem; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { color: var(--primary-color); }
+        .data-table a { color: var(--accent-color); text-decoration: none; }
+        .data-table a:hover { text-decoration: underline; }
+        .data-table button { padding: 6px 12px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-ban { background-color: var(--warn-color); color: #111; }
+        .btn-remove { background-color: var(--error-color); color: white; }
+        .tab-buttons { margin-bottom: 20px; border-bottom: 1px solid rgba(0, 230, 255, 0.2); }
+        .tab-buttons button { background: none; border: none; color: var(--accent-color); padding: 10px 15px; cursor: pointer; font-size: 1rem; border-bottom: 2px solid transparent; }
+        .tab-buttons button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .feedback-card { background: var(--main-bg); border-left: 3px solid var(--primary-color); padding: 15px; margin-bottom: 15px; border-radius: 5px; border: 1px solid var(--border-color); }
+        .feedback-card .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .feedback-card .user-info strong { color: var(--accent-color); }
+        .feedback-card .user-info a { color: var(--primary-color); text-decoration: none; font-size: 0.9rem; }
+        .feedback-card .message { color: var(--text-color-dark); }
+        .submission-card { background: var(--main-bg); border: 1px solid var(--border-color); padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .submission-card h4 { margin-top: 0; color: var(--primary-color); font-size: 1.5rem; }
+        .submission-card a { color: var(--accent-color); text-decoration: none; font-weight: bold; background: rgba(0, 230, 255, 0.1); padding: 8px 12px; border-radius: 5px; display: inline-block; }
+        .submission-card a:hover { background: rgba(0, 230, 255, 0.2); }
+        .submission-card p { margin-bottom: 15px; }
+        .submission-card textarea { width: 100%; background: #24292f; color: var(--text-color-light); border-radius: 5px; padding: 10px; margin: 10px 0; border: 1px solid var(--border-color); min-height: 60px; box-sizing: border-box; }
+        .submission-card .actions { margin-top: 15px; }
+        .submission-card button { padding: 10px 18px; border-radius: 5px; border: none; cursor: pointer; margin-right: 10px; font-weight: bold; transition: transform 0.2s ease; }
+        .submission-card button:hover { transform: translateY(-2px); }
+        .approve-btn { background-color: var(--success-color); color: white; }
+        .reject-btn { background-color: var(--error-color); color: white; }
+        .interview-btn { background-color: #007bff; color: white; }
+        .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .modal-content { background: var(--main-bg); padding: 30px; border-radius: 10px; border: 1px solid var(--border-color); width: 90%; max-width: 500px; }
+        .modal-content h3 { margin-top: 0; color: var(--primary-color); }
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; background: #24292f; color: var(--text-color-light); border: 1px solid var(--border-color); border-radius: 5px; }
+        .btn-warn { background-color: var(--warn-color); color: #111; }
+        .btn-notify-lead { background-color: #17a2b8; color: white; }
+        .tier-select { margin-left: 10px; padding: 8px; background: #070b1a; color: var(--accent-color); border: 1px solid var(--border-color); border-radius: 5px; }
+        .rating { display: flex; flex-direction: row-reverse; justify-content: center; margin-bottom: 10px; }
+        .rating input { display: none; }
+        .rating label { font-size: 2rem; color: #444; cursor: pointer; transition: color 0.2s; }
+        .rating input:checked ~ label, .rating:not(:checked) > label:hover, .rating:not(:checked) > label:hover ~ label { color: var(--warn-color); }
+        .previous-review { background: #24292f; padding: 10px; margin-top: 15px; border-radius: 5px; border-left: 3px solid var(--warn-color);}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2><i class="fas fa-shield-alt"></i> Admin</h2>
+        <nav class="sidebar-nav">
+            <a href="#" class="active" onclick="showSection(event, 'dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" onclick="showSection(event, 'verification')"><i class="fas fa-check-double"></i> Verification</a>
+            <a href="#" onclick="showSection(event, 'upgrades')"><i class="fas fa-arrow-up"></i> Upgrade Requests</a>
+            <a href="#" onclick="showSection(event, 'certified')"><i class="fas fa-certificate"></i> Certified Projects</a>
+            <a href="#" onclick="showSection(event, 'users')"><i class="fas fa-users"></i> User Management</a>
+            <a href="#" onclick="showSection(event, 'projects')"><i class="fas fa-folder"></i> Project Management</a>
+            <a href="#" onclick="showSection(event, 'support')"><i class="fas fa-life-ring"></i> Help & Support</a>
+            <a href="index.html" class="exit-link"><i class="fas fa-sign-out-alt"></i> Exit Admin Panel</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <section id="dashboard" class="content-section active">
+            <h1>Dashboard Overview</h1>
+            <div class="stats-grid">
+                <div class="stat-card"><div id="totalUsers" class="count">...</div><div class="label">Total Users</div></div>
+                <div class="stat-card"><div id="totalProjects" class="count">...</div><div class="label">Total Projects</div></div>
+                <div class="stat-card"><div id="pendingVerifications" class="count">...</div><div class="label">Pending Verifications</div></div>
+            </div>
+        </section>
+
+        <section id="verification" class="content-section">
+            <h1>Project Verification</h1>
+            <div id="submissionList"></div>
+        </section>
+        
+        <section id="upgrades" class="content-section">
+            <h1>Certificate Upgrade Requests</h1>
+            <div id="upgradeList"></div>
+        </section>
+        
+        <section id="certified" class="content-section">
+            <h1>Certified Projects</h1>
+            <div class="tab-buttons">
+                <button class="active" onclick="showCertifiedTab(event, 'silver')">Silver</button>
+                <button onclick="showCertifiedTab(event, 'gold')">Gold</button>
+                <button onclick="showCertifiedTab(event, 'platinum')">Platinum</button>
+            </div>
+            
+            <div id="silver" class="certified-tab active">
+                <table class="data-table"><thead><tr><th>Project Title</th><th>Owner</th><th>Email</th><th>Certificate ID</th></tr></thead><tbody id="silverListBody"></tbody></table>
+            </div>
+            <div id="gold" class="certified-tab" style="display: none;">
+                <table class="data-table"><thead><tr><th>Project Title</th><th>Owner</th><th>Email</th><th>Certificate ID</th></tr></thead><tbody id="goldListBody"></tbody></table>
+            </div>
+            <div id="platinum" class="certified-tab" style="display: none;">
+                <table class="data-table"><thead><tr><th>Project Title</th><th>Owner</th><th>Email</th><th>Certificate ID</th></tr></thead><tbody id="platinumListBody"></tbody></table>
+            </div>
+        </section>
+
+        <section id="users" class="content-section">
+            <h1>User Management</h1>
+            <input type="text" class="search-bar" id="userSearch" onkeyup="filterTable('userSearch', 'userListBody')" placeholder="Search by name or email...">
+            <table class="data-table">
+                <thead><tr><th>Name</th><th>Email</th><th>Username</th><th>Actions</th></tr></thead>
+                <tbody id="userListBody"></tbody>
+            </table>
+        </section>
+
+        <section id="projects" class="content-section">
+            <h1>Project Management</h1>
+            <input type="text" class="search-bar" id="projectSearch" onkeyup="filterTable('projectSearch', 'projectListBody')" placeholder="Search by title...">
+            <table class="data-table">
+                <thead><tr><th>Title</th><th>Owner Email</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="projectListBody"></tbody>
+            </table>
+        </section>
+        
+        <section id="support" class="content-section">
+            <h1>Help & Support</h1>
+            <div class="tab-buttons">
+                <button class="active" onclick="showSupportTab(event, 'inactivity')">Inactivity Reports</button>
+                <button onclick="showSupportTab(event, 'complaints')">Complaints Box</button>
+                <button onclick="showSupportTab(event, 'requests')">Feature Requests</button>
+            </div>
+            <div id="inactivity" class="support-tab active"><div id="inactivityList"></div></div>
+            <div id="complaints" class="support-tab" style="display: none;"><div id="complaintList"></div></div>
+            <div id="requests" class="support-tab" style="display: none;"><div id="requestList"></div></div>
+        </section>
+    </div>
+
+    <div id="interviewModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Schedule Interview</h3>
+            <label for="interviewDate">Date:</label>
+            <input type="date" id="interviewDate">
+            <label for="interviewTime">Time:</label>
+            <input type="time" id="interviewTime">
+            <label for="meetingLink">Meeting Link:</label>
+            <input type="url" id="meetingLink" placeholder="https://meet.google.com/xyz-abc-def">
+            <div>
+                <button class="interview-btn" onclick="sendInvite()">Send Invite</button>
+                <button class="reject-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        if (!firebase.apps.length) {
+             firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const functions = firebase.functions();
+        
+        const modal = document.getElementById('interviewModal');
+        let currentSchedulingData = {};
+        
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const adminDoc = await db.collection('admins').doc(user.uid).get();
+                if (adminDoc.exists) {
+                    loadAllAdminData();
+                } else { window.location.replace("admin-login.html"); }
+            } else { window.location.replace("admin-login.html"); }
+        });
+
+        function loadAllAdminData() {
+            loadDashboardStats();
+            loadVerificationProjects();
+            loadUpgradeRequests();
+            loadCertifiedProjects();
+            loadAllUsers();
+            loadAllProjects();
+            loadInactivityReports();
+            loadComplaints();
+            loadRequests();
+        }
+        
+        function showSection(event, sectionId) {
+             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+             document.getElementById(sectionId).classList.add('active');
+             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+             event.currentTarget.classList.add('active');
+        }
+
+        function showSupportTab(event, tabId) {
+            document.querySelectorAll('.support-tab').forEach(tab => tab.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+            document.querySelectorAll('#support .tab-buttons button').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+        
+        function showCertifiedTab(event, tabId) {
+            document.querySelectorAll('.certified-tab').forEach(tab => tab.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+            document.querySelectorAll('#certified .tab-buttons button').forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        async function loadDashboardStats() {
+            const usersSnap = await db.collection('users').get();
+            const projectsSnap = await db.collection('ideas').get();
+            const pendingSnap = await db.collection('ideas').where('verificationStatus', '==', 'pending').get();
+            document.getElementById('totalUsers').textContent = usersSnap.size;
+            document.getElementById('totalProjects').textContent = projectsSnap.size;
+            document.getElementById('pendingVerifications').textContent = pendingSnap.size;
+        }
+
+        function loadVerificationProjects() {
+            db.collection('ideas').where('verificationStatus', '==', 'pending').onSnapshot(snapshot => {
+                const list = document.getElementById('submissionList');
+                list.innerHTML = snapshot.empty ? "<p>No pending submissions.</p>" : '';
+                snapshot.forEach(doc => {
+                    const project = doc.data();
+                    list.innerHTML += `
+                        <div class="submission-card">
+                            <h4>${project.title}</h4><p><strong>Owner:</strong> ${project.email || 'N/A'}</p>
+                            <a href="${project.submittedRepoUrl}" target="_blank">Review Code</a>
+                            <textarea id="feedback-${doc.id}" placeholder="Internal Admin Feedback/Reason for Action..."></textarea>
+                            <div class="rating" id="rating-${doc.id}">
+                                <input type="radio" name="rating-${doc.id}" value="5" id="5-${doc.id}"><label for="5-${doc.id}">☆</label>
+                                <input type="radio" name="rating-${doc.id}" value="4" id="4-${doc.id}"><label for="4-${doc.id}">☆</label>
+                                <input type="radio" name="rating-${doc.id}" value="3" id="3-${doc.id}"><label for="3-${doc.id}">☆</label>
+                                <input type="radio" name="rating-${doc.id}" value="2" id="2-${doc.id}"><label for="2-${doc.id}">☆</label>
+                                <input type="radio" name="rating-${doc.id}" value="1" id="1-${doc.id}"><label for="1-${doc.id}">☆</label>
+                            </div>
+                            <div class="actions">
+                                <button class="approve-btn" onclick="approveProject('${doc.id}')">Approve as Silver</button>
+                                <button class="reject-btn" onclick="rejectProject('${doc.id}')">Reject</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+        
+        function loadUpgradeRequests() {
+            db.collection('ideas').where('upgradeRequestStatus', '==', 'pending').onSnapshot(snapshot => {
+                const list = document.getElementById('upgradeList');
+                list.innerHTML = snapshot.empty ? "<p>No pending upgrade requests.</p>" : '';
+                snapshot.forEach(doc => {
+                    const project = doc.data();
+                    const prevRating = project.adminRating ? '⭐'.repeat(project.adminRating) : 'Not rated';
+                    const upgradeAttempts = project.upgradeAttempts || 0;
+                    list.innerHTML += `
+                        <div class="submission-card">
+                            <h4>${project.title}</h4>
+                            <p>Requesting upgrade to: <strong>${project.requestedTier}</strong></p>
+                            <p>Attempts remaining: <strong>${3 - upgradeAttempts}</strong></p>
+                            <a href="${project.upgradeRequestUrl}" target="_blank">Review Updated Code</a>
+                            <div class="previous-review">
+                                <p><strong>Previous Rating:</strong> ${prevRating}</p>
+                                <p><strong>Previous Feedback:</strong> ${project.adminFeedback || 'None'}</p>
+                            </div>
+                            <div class="actions">
+                                <button class="approve-btn" onclick="approveUpgrade('${doc.id}', '${project.requestedTier}')">Approve Upgrade</button>
+                                <button class="reject-btn" onclick="rejectUpgrade('${doc.id}', '${project.requestedTier}')">Reject Upgrade</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function loadCertifiedProjects() {
+            const tiers = ['Silver', 'Gold', 'Platinum'];
+            tiers.forEach(tier => {
+                db.collection('applications').where('certificateTier', '==', tier).onSnapshot(async snapshot => {
+                    const list = document.getElementById(`${tier.toLowerCase()}ListBody`);
+                    list.innerHTML = snapshot.empty ? `<tr><td colspan="4">No ${tier} projects.</td></tr>` : '';
+                    for (const doc of snapshot.docs) {
+                        const app = doc.data();
+                        const projectDoc = await db.collection('ideas').doc(app.projectId).get();
+                        let projectTitle = 'N/A', repoUrl = '#';
+                        if (projectDoc.exists) {
+                            projectTitle = projectDoc.data().title;
+                            repoUrl = projectDoc.data().submittedRepoUrl;
+                        }
+                        list.innerHTML += `<tr><td><a href="${repoUrl}" target="_blank">${projectTitle}</a></td><td>${app.certificateName}</td><td>${app.email}</td><td>${app.certificateId}</td></tr>`;
+                    }
+                });
+            });
+        }
+        
+        function loadInactivityReports() {
+            const list = document.getElementById('inactivityList');
+            db.collection('inactivityReports').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                list.innerHTML = snapshot.empty ? "<p>No inactivity reports found.</p>" : '';
+                snapshot.forEach(doc => {
+                    const report = doc.data();
+                    const reportId = doc.id;
+                    const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+                    let actionsHTML = '';
+                    if (report.status === 'pending') {
+                        actionsHTML = `<button class="btn-warn" onclick="sendWarning('${reportId}')">Send 3-Day Warning</button>`;
+                    } else if (report.status === 'warned') {
+                        const timeSinceWarning = Date.now() - report.warningSentAt.toDate().getTime();
+                        if (timeSinceWarning > threeDaysInMs) {
+                            actionsHTML = `<button class="btn-notify-lead" onclick="notifyLead('${reportId}')">Notify Lead to Act</button>`;
+                        } else {
+                            const daysLeft = Math.ceil((threeDaysInMs - timeSinceWarning) / (1000 * 60 * 60 * 24));
+                            actionsHTML = `<span>Warning Sent (${daysLeft}d left)</span>`;
+                        }
+                    } else {
+                        actionsHTML = `<span>Action Taken (${report.status})</span>`;
+                    }
+                    list.innerHTML += `<div class="feedback-card" style="border-left-color: var(--error-color);"><div class="user-info"><span><strong>Reported User:</strong> ${report.reportedUserName}</span><a href="admin-view-profile.html?uid=${report.reportedUid}">View Profile</a></div><p class="message">Reported by <strong>${report.reporterName}</strong> for project <strong>${report.projectName}</strong>.</p><div class="actions" style="margin-top: 10px;">${actionsHTML}</div></div>`;
+                });
+            });
+        }
+        
+        async function sendWarning(reportId) {
+            const reportRef = db.collection('inactivityReports').doc(reportId);
+            const reportDoc = await reportRef.get();
+            const reportData = reportDoc.data();
+            await reportRef.update({ status: 'warned', warningSentAt: firebase.firestore.FieldValue.serverTimestamp() });
+            await db.collection('users').doc(reportData.reportedUid).collection('notifications').add({
+                senderName: "Admin", message: `You have an official inactivity warning for project '${reportData.projectName}'. Contact your team lead within 3 days.`,
+                link: `/project-details.html?id=${reportData.projectId}`, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Warning sent to user.");
+        }
+
+        async function notifyLead(reportId) {
+            const reportRef = db.collection('inactivityReports').doc(reportId);
+            const reportDoc = await reportRef.get();
+            const reportData = reportDoc.data();
+            await reportRef.update({ status: 'lead_notified' });
+            await db.collection('users').doc(reportData.reporterUid).collection('notifications').add({
+                senderName: "Admin",
+                message: `The 3-day warning for ${reportData.reportedUserName} has expired. You may now remove them from project '${reportData.projectName}'.`,
+                link: `/project-details.html?id=${reportData.projectId}`, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Team lead notified.");
+        }
+
+        function loadComplaints() {
+            const list = document.getElementById('complaintList');
+            db.collection('complaints').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                list.innerHTML = snapshot.empty ? "<p>No complaints found.</p>" : '';
+                snapshot.forEach(doc => {
+                    const c = doc.data();
+                    list.innerHTML += `<div class="feedback-card"><div class="user-info"><span><strong>User:</strong> ${c.userName} (${c.userEmail})</span><a href="admin-view-profile.html?uid=${c.uid}">View Profile</a></div><p class="message">${c.message}</p></div>`;
+                });
+            });
+        }
+
+        function loadRequests() {
+            const list = document.getElementById('requestList');
+            db.collection('featureRequests').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                list.innerHTML = snapshot.empty ? "<p>No requests found.</p>" : '';
+                snapshot.forEach(doc => {
+                    const r = doc.data();
+                    list.innerHTML += `<div class="feedback-card" style="border-left-color: var(--warn-color);"><div class="user-info"><span><strong>User:</strong> ${r.userName} (${r.userEmail})</span><a href="admin-view-profile.html?uid=${r.uid}">View Profile</a></div><p class="message">${r.message}</p></div>`;
+                });
+            });
+        }
+        
+        async function loadAllUsers() {
+            const list = document.getElementById('userListBody');
+            const snap = await db.collection('users').get();
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const user = doc.data();
+                list.innerHTML += `<tr><td>${user.displayName}</td><td>${user.email}</td><td>@${user.username}</td><td><a href="admin-view-profile.html?uid=${user.uid}" style="margin-right: 10px;">View</a><button class="btn-ban" onclick="banUser('${user.uid}')">Ban</button></td></tr>`;
+            });
+        }
+        
+        async function loadAllProjects() {
+            const list = document.getElementById('projectListBody');
+            const snap = await db.collection('ideas').orderBy('createdAt', 'desc').get();
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const p = doc.data();
+                list.innerHTML += `<tr><td>${p.title}</td><td>${p.email}</td><td>${p.completed ? (p.verificationStatus || 'Completed') : 'Active'}</td><td><button class="btn-remove" onclick="removeProject('${doc.id}')">Remove</button></td></tr>`;
+            });
+        }
+        
+        async function removeProject(projectId) {
+            if (!confirm("Are you sure? This action cannot be undone.")) return;
+            try {
+                await db.collection('ideas').doc(projectId).delete();
+                alert("Project has been removed.");
+                loadAllProjects();
+            } catch (error) { alert("Failed to remove project."); }
+        }
+
+        function filterTable(inputId, tableBodyId) {
+            const filter = document.getElementById(inputId).value.toUpperCase();
+            const tr = document.getElementById(tableBodyId).getElementsByTagName("tr");
+            for (let i = 0; i < tr.length; i++) {
+                tr[i].style.display = (tr[i].textContent.toUpperCase().indexOf(filter) > -1) ? "" : "none";
+            }
+        }
+        
+        async function banUser(uid) {
+            if (!confirm("Are you sure? This will disable the user's account permanently.")) return;
+            try {
+                const banUserFunction = functions.httpsCallable('banUser');
+                await banUserFunction({ uid: uid });
+                alert("User has been banned.");
+                loadAllUsers();
+            } catch (error) {
+                alert("Failed to ban user. Ensure the Cloud Function is deployed.");
+            }
+        }
+        
+        function openModal(projectId, ownerUID, title) {
+            currentSchedulingData = { projectId, projectOwnerUID: ownerUID, projectTitle: title };
+            document.getElementById('modalTitle').textContent = `Schedule Interview for: ${title}`;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() { modal.style.display = 'none'; }
+
+        async function sendInvite() {
+            const { projectId, projectOwnerUID, projectTitle } = currentSchedulingData;
+            const date = document.getElementById('interviewDate').value;
+            const time = document.getElementById('interviewTime').value;
+            const link = document.getElementById('meetingLink').value;
+            if (!date || !time || !link) return alert("Please fill in all details.");
+            
+            try {
+                await db.collection('ideas').doc(projectId).update({
+                    'interviewDetails': { date, time, link }
+                });
+                await db.collection('users').doc(projectOwnerUID).collection('notifications').add({
+                    senderName: "Admin",
+                    message: `An interview for your project '${projectTitle}' is scheduled for ${date} at ${time}.`,
+                    link: `/project-details.html?id=${projectId}`,
+                    read: false,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Interview scheduled!");
+                closeModal();
+            } catch (error) { alert("Failed to schedule interview."); }
+        }
+
+        async function approveProject(id) {
+            const feedback = document.getElementById(`feedback-${id}`).value;
+            const ratingEl = document.querySelector(`input[name="rating-${id}"]:checked`);
+            const rating = ratingEl ? parseInt(ratingEl.value) : 0;
+            if (rating === 0) return alert("Please select a star rating before approving.");
+
+            if (!confirm("Are you sure you want to APPROVE this project as Silver?")) return;
+            
+            await db.collection('ideas').doc(id).update({ 
+                verificationStatus: 'approved',
+                adminFeedback: feedback,
+                adminRating: rating,
+                certificateTier: 'Silver'
+            });
+
+            const appsSnap = await db.collection('applications').where('projectId', '==', id).get();
+            const batch = db.batch();
+            appsSnap.forEach(doc => {
+                batch.update(doc.ref, { certificateTier: 'Silver' });
+            });
+            await batch.commit();
+            
+            alert("Project approved as Silver!");
+        }
+        
+        async function approveUpgrade(id, newTier) {
+            const feedback = prompt("Enter any new feedback for this upgrade:", "Excellent improvements!");
+            await db.collection('ideas').doc(id).update({
+                upgradeRequestStatus: 'resolved',
+                adminFeedback: feedback,
+                certificateTier: newTier // Correctly update the certificate tier
+            });
+            const appsSnap = await db.collection('applications').where('projectId', '==', id).get();
+            const batch = db.batch();
+            appsSnap.forEach(doc => {
+                batch.update(doc.ref, { certificateTier: newTier });
+            });
+            await batch.commit();
+            alert(`Upgrade to ${newTier} approved!`);
+        }
+
+        async function rejectUpgrade(id, requestedTier) {
+            const feedback = prompt("Please provide a reason for rejecting the upgrade:");
+            if (!feedback) return;
+
+            const projectRef = db.collection('ideas').doc(id);
+            const projectDoc = await projectRef.get();
+            const upgradeAttempts = (projectDoc.data().upgradeAttempts || 0) + 1;
+            const newStatus = (upgradeAttempts >= 3) ? 'upgrade_failed' : 'upgrade_rejected';
+
+            await projectRef.update({ 
+                upgradeRequestStatus: newStatus,
+                adminFeedback: feedback,
+                upgradeAttempts: upgradeAttempts
+            });
+
+            alert("Upgrade request rejected.");
+        }
+
+        async function rejectProject(id) {
+            const feedback = document.getElementById(`feedback-${id}`).value;
+            if (!feedback) return alert("Please provide feedback/reason for rejection.");
+            if (!confirm("Are you sure you want to REJECT this project?")) return;
+            
+            const projectRef = db.collection('ideas').doc(id);
+            await db.runTransaction(async (t) => {
+                const doc = await t.get(projectRef);
+                const attempts = doc.data().verificationAttempts || 0;
+                const updateData = {
+                    verificationAttempts: attempts + 1,
+                    adminFeedback: feedback
+                };
+                updateData.verificationStatus = (updateData.verificationAttempts >= 3) ? 'failed' : 'rejected';
+                t.update(projectRef, updateData);
+            });
+        }
+    </script>
+</body>
+</html>

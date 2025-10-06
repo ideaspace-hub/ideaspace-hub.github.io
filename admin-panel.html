@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body { font-family: 'Roboto', sans-serif; background: #0a0f24; color: #e0e0e0; margin: 0; }
+        .navbar { background: rgba(10, 15, 36, 0.8); color: white; padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar a { color: #8affff; text-decoration: none; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+        h2 { color: #66ffff; text-align: center; }
+        .submission-card { background: rgba(10, 15, 36, 0.75); border: 1px solid rgba(102, 255, 255, 0.2); padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .submission-card h4 { margin-top: 0; color: #8affff; }
+        .submission-card a { color: #66ffff; font-weight: bold; }
+        .submission-card textarea { width: 100%; background: rgba(255,255,255,0.1); color: white; border-radius: 5px; padding: 10px; margin: 10px 0; border: 1px solid #66ffff; box-sizing: border-box; }
+        .submission-card button { padding: 10px 18px; border-radius: 5px; border: none; cursor: pointer; margin-right: 10px; font-weight: bold; }
+        .approve-btn { background-color: #28a745; color: white; }
+        .reject-btn { background-color: #dc3545; color: white; }
+        .interview-btn { background-color: #007bff; color: white; }
+        .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .modal-content { background: #0a0f24; padding: 30px; border-radius: 10px; border: 1px solid #66ffff; width: 90%; max-width: 500px; }
+        .modal-content h3 { margin-top: 0; color: #66ffff; }
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; background: rgba(255,255,255,0.1); color: white; border: 1px solid #66ffff; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong>🌟 CollabSpace [Admin Panel]</strong></div>
+        <a href="index.html">Exit Admin Panel</a>
+    </div>
+
+    <div class="container">
+        <h2>Verification Submissions</h2>
+        <div id="submissionList"><p>Loading submissions...</p></div>
+    </div>
+
+    <div id="interviewModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Schedule Interview</h3>
+            <label for="interviewDate">Date:</label>
+            <input type="date" id="interviewDate">
+            <label for="interviewTime">Time:</label>
+            <input type="time" id="interviewTime">
+            <label for="meetingLink">Meeting Link (e.g., Google Meet, Zoom):</label>
+            <input type="url" id="meetingLink" placeholder="https://meet.google.com/xyz-abc-def">
+            <div>
+                <button class="interview-btn" onclick="sendInvite()">Send Invite & Notify User</button>
+                <button class="reject-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        const submissionList = document.getElementById('submissionList');
+        const modal = document.getElementById('interviewModal');
+        let currentSchedulingData = {};
+        
+        const adminUID = "mhqBgqISbGaSfULDlYrvuTwwInh2"; 
+
+        auth.onAuthStateChanged(user => {
+            if (user && user.uid === adminUID) {
+                loadSubmissions();
+            } else {
+                document.body.innerHTML = "<h2 style='color: #dc3545; text-align:center;'>Access Denied</h2>";
+            }
+        });
+
+        function loadSubmissions() {
+            db.collection('ideas').where('verificationStatus', '==', 'pending').onSnapshot(snapshot => {
+                submissionList.innerHTML = snapshot.empty ? "<p>No pending submissions.</p>" : '';
+                snapshot.forEach(doc => {
+                    const project = doc.data();
+                    const projectId = doc.id;
+                    const projectOwnerUID = project.uid;
+                    
+                    submissionList.innerHTML += `
+                        <div class="submission-card">
+                            <h4>${project.title}</h4>
+                            <p><strong>Owner Email:</strong> ${project.email || 'N/A'}</p>
+                            <a href="${project.submittedRepoUrl}" target="_blank" rel="noopener noreferrer">Review Code Repository</a>
+                            <hr style="margin: 15px 0; border-color: rgba(102, 255, 255, 0.1);">
+                            <textarea id="feedback-${projectId}" placeholder="Provide feedback here if rejecting..."></textarea>
+                            <div>
+                                <button class="interview-btn" onclick="openModal('${projectId}', '${projectOwnerUID}', '${project.title}')">Schedule Interview</button>
+                                <button class="approve-btn" onclick="approveProject('${projectId}')">Approve</button>
+                                <button class="reject-btn" onclick="rejectProject('${projectId}')">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+        
+        function openModal(projectId, projectOwnerUID, projectTitle) {
+            currentSchedulingData = { projectId, projectOwnerUID, projectTitle };
+            document.getElementById('modalTitle').textContent = `Schedule Interview for: ${projectTitle}`;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        async function sendInvite() {
+            const date = document.getElementById('interviewDate').value;
+            const time = document.getElementById('interviewTime').value;
+            const link = document.getElementById('meetingLink').value;
+            
+            if (!date || !time || !link) {
+                alert("Please fill in all interview details.");
+                return;
+            }
+
+            const { projectId, projectOwnerUID, projectTitle } = currentSchedulingData;
+
+            try {
+                await db.collection('ideas').doc(projectId).update({
+                    'interviewDetails.date': date,
+                    'interviewDetails.time': time,
+                    'interviewDetails.link': link,
+                    'interviewDetails.scheduledAt': firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await db.collection('users').doc(projectOwnerUID).collection('notifications').add({
+                    senderName: "Admin",
+                    message: `An interview for your project '${projectTitle}' has been scheduled for ${date} at ${time}.`,
+                    link: `/project-details.html?id=${projectId}`,
+                    read: false,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("Interview scheduled and notification sent!");
+                closeModal();
+            } catch (error) {
+                console.error("Error scheduling interview:", error);
+                alert("Failed to schedule interview.");
+            }
+        }
+
+        async function approveProject(id) {
+            if (!confirm("Are you sure you want to APPROVE this project?")) return;
+            await db.collection('ideas').doc(id).update({ verificationStatus: 'approved' });
+        }
+
+        async function rejectProject(id) {
+            if (!confirm("Are you sure you want to REJECT this project?")) return;
+            const feedback = document.getElementById(`feedback-${id}`).value;
+            const projectRef = db.collection('ideas').doc(id);
+            
+            await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(projectRef);
+                const attempts = doc.data().verificationAttempts || 0;
+                
+                if (attempts + 1 >= 3) {
+                    transaction.update(projectRef, {
+                        verificationStatus: 'failed',
+                        verificationAttempts: firebase.firestore.FieldValue.increment(1),
+                        adminFeedback: feedback || "Maximum attempts reached."
+                    });
+                } else {
+                    transaction.update(projectRef, {
+                        verificationStatus: 'rejected',
+                        verificationAttempts: firebase.firestore.FieldValue.increment(1),
+                        adminFeedback: feedback || "Please review and resubmit."
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
