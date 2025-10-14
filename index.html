@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabSpace - Home</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Changed to vibrant teal/cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --button-blue: linear-gradient(45deg, #007bff, #00c0ff);
+            --button-hover-blue: linear-gradient(45deg, #0056b3, #008fcc);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            padding-top: 70px;
+        }
+
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: var(--accent-color);
+        }
+
+        .navbar a.active {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 4px;
+        }
+
+        .navbar strong {
+            font-size: 1.4rem;
+            color: #ffffff;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+
+        .notification-link {
+            position: relative;
+        }
+
+        #notification-dot {
+            display: none;
+            position: absolute;
+            top: -2px;
+            right: -12px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid var(--dark-bg);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .feed-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .feed-header h1 {
+            color: var(--primary-color); /* Applied primary color to heading */
+        }
+
+        .project-card {
+            background: var(--main-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .project-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .project-card-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .project-card-header a {
+            color: var(--text-color-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .project-card-content h3 {
+            margin: 0 0 10px;
+            color: var(--primary-color); /* Applied primary color to project titles */
+            font-size: 1.5rem;
+        }
+
+        .project-card-content .description {
+            margin: 0 0 15px;
+            color: var(--text-color-dark);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .read-more-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: underline;
+        }
+
+        .project-actions {
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .project-actions .status {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color-dark);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-apply, .btn-details {
+            text-decoration: none;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-apply {
+            background: var(--button-blue);
+            color: white;
+        }
+        
+        .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+            background: var(--button-hover-blue);
+        }
+
+        .btn-details {
+            background: var(--border-color);
+            color: var(--text-color-light);
+        }
+
+        .btn-details:hover {
+            background: #444c56;
+            transform: translateY(-2px);
+        }
+        
+        .tags-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            margin-top: 15px; 
+            padding-top: 15px; 
+            border-top: 1px dashed var(--border-color); 
+        }
+
+        .tag { 
+            background-color: var(--border-color); 
+            color: var(--accent-color); 
+            padding: 4px 10px; 
+            border-radius: 15px; 
+            font-size: 0.85rem; 
+            text-decoration: none; 
+        }
+
+        .hidden-tag {
+            display: none;
+        }
+        
+        .tags-container.expanded .hidden-tag {
+            display: inline-block;
+        }
+
+        .more-tags-btn {
+            background: none;
+            border: none;
+            color: var(--text-color-dark);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0;
+            text-decoration: underline;
+        }
+        
+        .creator-btn, .verify-btn {
+            position: fixed;
+            bottom: 25px;
+            padding: 12px 25px;
+            background: rgba(22, 27, 34, 0.7);
+            color: var(--primary-color);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .creator-btn:hover, .verify-btn:hover {
+            transform: translateY(-3px);
+            background: var(--primary-color);
+            color: var(--dark-bg);
+        }
+        .creator-btn { left: 25px; }
+        .verify-btn { right: 25px; }
+
+
+        #applyModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #applyModal .modal-box {
+            background: var(--main-bg);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 550px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        #applyModal .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+
+        #applyModal select,
+        #applyModal input,
+        #applyModal textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-color-light);
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .modal-notification {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 15px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .modal-notification.show { display: block; opacity: 1; }
+        .modal-notification.success { background-color: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
+        .modal-notification.error { background-color: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
+        
+        @media (max-width: 850px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 65px;
+                left: 0;
+                background: rgba(22, 27, 34, 0.95);
+                padding: 10px 0;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .navbar a {
+                margin: 10px 0;
+                padding: 10px 0;
+                text-align: center;
+                width: 100%;
+                border-bottom: none !important;
+            }
+            .hamburger {
+                display: block;
+            }
+            .navbar a.active {
+                background-color: rgba(102, 255, 255, 0.1);
+                border-radius: 5px;
+                width: 90%;
+                margin: 5px auto;
+            }
+            .creator-btn, .verify-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="creator-info.html" class="creator-btn">Creator Info</a>
+    <a href="verify-certificate.html" class="verify-btn">Verify Certificate</a>
+
+    <div class="navbar">
+<div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html" class="active">Home</a>
+            <a href="post-idea.html">Post Idea</a>
+            <a href="apply.html">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html">History</a>
+            <a href="help.html">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container" id="feedContainer">
+        <div class="feed-header">
+            <h1><span style="color: #00e6ff;">🚀 Find a Project to Join</span></h1>
+            <p>Discover projects from creators you follow.</p>
+        </div>
+        <div id="projectFeed"><p>Loading your feed...</p></div>
+    </div>
+
+    <div id="applyModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>Apply to Project</h3>
+            <label for="selectedRole">Select Role:</label>
+            <select id="selectedRole"></select>
+            <label for="applicantName">Your Name:</label>
+            <input id="applicantName" readonly>
+            <label for="applicantEmail">Your Email:</label>
+            <input id="applicantEmail" readonly>
+            <label for="applicationMessage">Message (optional):</label>
+            <textarea id="applicationMessage"></textarea>
+            <button class="btn-apply" id="submitAppButton" onclick="submitApplication()">Submit Application</button>
+            <div id="modalNotification" class="modal-notification"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const projectFeed = document.getElementById('projectFeed');
+        const modalNotification = document.getElementById("modalNotification");
+        let userEmail = "", userName = "", currentUserId = "", selectedProjectId = "";
+        let appliedProjects = {};
+        let notificationTimeout;
+        
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                currentUserId = user.uid;
+                userEmail = user.email;
+                userName = user.displayName || user.email;
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+                
+                const appsSnap = await db.collection("applications").where("uid", "==", user.uid).get();
+                appsSnap.forEach(doc => { appliedProjects[doc.data().projectId] = true; });
+                loadFeed(user.uid);
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        async function loadFeed(uid) {
+            projectFeed.innerHTML = "";
+            const userDoc = await db.collection('users').doc(uid).get();
+            const followingList = (userDoc.data() && userDoc.data().following) ? userDoc.data().following : [];
+            if (followingList.length > 0) {
+                const followedProjectsSnap = await db.collection('ideas').where('uid', 'in', followingList).orderBy('createdAt', 'desc').get();
+                if (!followedProjectsSnap.empty) {
+                    await renderProjects(followedProjectsSnap.docs);
+                } else {
+                    projectFeed.innerHTML = '<h4>The creators you follow have no available projects. Here are some recent ones:</h4>';
+                    await loadFallbackFeed();
+                }
+            } else {
+                projectFeed.innerHTML = '<h4>Follow others to see their projects! Here are some recent ones:</h4>';
+                await loadFallbackFeed();
+            }
+        }
+
+        async function loadFallbackFeed() {
+            const ideasSnap = await db.collection('ideas').orderBy('createdAt', 'desc').limit(10).get();
+            await renderProjects(ideasSnap.docs);
+        }
+
+        async function renderProjects(projectDocs) {
+            const creatorUIDs = [...new Set(projectDocs.map(doc => doc.data().uid).filter(Boolean))];
+            if (creatorUIDs.length === 0) return;
+            const creatorsSnap = await db.collection('users').where(firebase.firestore.FieldPath.documentId(), 'in', creatorUIDs).get();
+            const creatorsMap = new Map();
+            creatorsSnap.forEach(doc => creatorsMap.set(doc.id, doc.data()));
+
+            let content = '';
+            let projectsFound = false;
+            projectDocs.forEach(doc => {
+                const project = doc.data();
+                const creator = creatorsMap.get(project.uid);
+                const roles = project.roles || {};
+                const hasVacancy = Object.values(roles).some(c => c > 0);
+                const alreadyApplied = appliedProjects[doc.id];
+                
+                if (creator && hasVacancy && !alreadyApplied && !project.completed) {
+                    projectsFound = true;
+                    const roleText = Object.entries(roles).map(([r, c]) => `${r}: ${c}`).join(", ");
+                    const description = project.description || "";
+                    const shortDesc = description.substring(0, 180);
+                    
+                    // Corrected HTML for description
+                    let descriptionHTML = `<p class="description">`;
+                    if (description.length > 180) {
+                        descriptionHTML += `<span class="short-text">${shortDesc}...</span><span class="full-text" style="display:none;">${description}</span><button class="read-more-btn" onclick="toggleDescription(this)">Read more</button>`;
+                    } else {
+                        descriptionHTML += description;
+                    }
+                    descriptionHTML += `</p>`;
+
+                    const tags = project.tags || [];
+                    let tagsHTML = `<div class="tags-container">`;
+                    tags.forEach((tag, index) => {
+                        tagsHTML += `<a href="search.html?tag=${tag}" class="tag ${index >= 3 ? 'hidden-tag' : ''}">#${tag}</a>`;
+                    });
+                    if (tags.length > 3) {
+                        tagsHTML += `<button class="more-tags-btn" onclick="toggleTags(this)">+ ${tags.length - 3} more</button>`;
+                    }
+                    tagsHTML += '</div>';
+
+                    content += `<div class="project-card"><div class="project-card-header"><img src="${creator.photoURL || 'https://placehold.co/40x40/161b22/58a6ff?text=' + creator.displayName.charAt(0)}" alt="${creator.displayName}"><a href="profile.html?uid=${project.uid}">${creator.displayName}</a></div><div class="project-card-content"><h3>${project.title}</h3>${descriptionHTML}<div class="project-actions"><a href="project-details.html?id=${doc.id}" class="btn-details">View Details</a><button class="btn-apply" onclick='openApplyModal("${doc.id}", ${JSON.stringify(roles)})'>Apply Now</button></div>${tagsHTML}</div></div>`;
+                }
+            });
+            projectFeed.innerHTML += content;
+            if (!projectsFound) {
+                 projectFeed.innerHTML += '<p>No available projects to display right now.</p>';
+            }
+        }
+        
+        // Corrected toggleDescription function
+        function toggleDescription(button) {
+            const descriptionContainer = button.parentNode;
+            const shortText = descriptionContainer.querySelector('.short-text');
+            const fullText = descriptionContainer.querySelector('.full-text');
+            
+            if (fullText.style.display === 'none') {
+                shortText.style.display = 'none';
+                fullText.style.display = 'inline';
+                button.textContent = 'Show less';
+            } else {
+                shortText.style.display = 'inline';
+                fullText.style.display = 'none';
+                button.textContent = 'Read more';
+            }
+        }
+
+        // Updated toggleTags function to be more generic
+        function toggleTags(button) {
+            const container = button.parentNode;
+            const isExpanded = container.classList.toggle('expanded');
+            button.textContent = isExpanded ? '- Show less' : `+ ${container.querySelectorAll('.hidden-tag').length} more`;
+        }
+        
+        function openApplyModal(projectId, roles) {
+            selectedProjectId = projectId;
+            const roleSelect = document.getElementById("selectedRole");
+            roleSelect.innerHTML = "";
+            for (const roleName in roles) {
+                if (roles[roleName] > 0) {
+                    const opt = document.createElement("option");
+                    opt.value = roleName;
+                    opt.textContent = `${roleName} (${roles[roleName]} available)`;
+                    roleSelect.appendChild(opt);
+                }
+            }
+            document.getElementById("applicantName").value = userName;
+            document.getElementById("applicantEmail").value = userEmail;
+            document.getElementById("applicationMessage").value = "";
+            document.getElementById("applyModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("applyModal").style.display = "none";
+        }
+
+        async function submitApplication() {
+            const submitButton = document.getElementById('submitAppButton');
+            submitButton.disabled = true;
+            const role = document.getElementById("selectedRole").value;
+            if (!role) {
+                submitButton.disabled = false; return;
+            }
+
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const projectRef = db.collection("ideas").doc(selectedProjectId);
+                    const projectDoc = await transaction.get(projectRef);
+                    if (!projectDoc.exists) throw "Project no longer exists.";
+                    
+                    const projectData = projectDoc.data();
+                    const roles = projectData.roles || {};
+                    if (!roles[role] || roles[role] <= 0) throw "This role is no longer available.";
+
+                    const applicationRef = db.collection("applications").doc();
+                    transaction.set(applicationRef, {
+                        projectId: selectedProjectId, name: userName, email: userEmail, uid: currentUserId,
+                        message: document.getElementById("applicationMessage").value, role, status: "Pending",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    const notificationRef = db.collection('users').doc(projectData.uid).collection('notifications').doc();
+                    transaction.set(notificationRef, {
+                        senderName: userName, message: `applied for the role of '${role}' in your project '${projectData.title}'.`,
+                        link: '/interview.html', read: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    roles[role] -= 1;
+                    transaction.update(projectRef, { roles });
+                });
+                
+                modalNotification.textContent = "Application submitted successfully!";
+                modalNotification.className = 'modal-notification success show';
+                setTimeout(() => {
+                    closeModal();
+                    loadFeed(currentUserId);
+                }, 1500);
+
+            } catch (err) {
+                modalNotification.textContent = `Failed to submit: ${err}`;
+                modalNotification.className = 'modal-notification error show';
+            } finally {
+                submitButton.disabled = false;
+            }
+        }
+        
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            db.collection('users').doc(uid).collection('notifications').where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  if (dot) dot.style.display = snapshot.empty ? 'none' : 'block';
+              });
+        }
+
+        function logout() {
+            auth.signOut().then(() => { window.location.replace("login.html"); });
+        }
+
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

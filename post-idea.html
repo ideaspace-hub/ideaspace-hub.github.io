@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Idea - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+        }
+
+        /* --- Navbar --- */
+        .navbar { background: rgba(22, 27, 34, 0.8); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .navbar a.active { border-bottom: 2px solid var(--accent-color); padding-bottom: 4px; }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; transition: color 0.3s ease, transform 0.2s ease; }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        .notification-link { position: relative; }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
+        
+        /* --- Form Layout & Styling --- */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h2 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        .page-header p {
+            color: var(--text-color-dark);
+            font-size: 1.1rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .main-details {
+            grid-column: span 1;
+        }
+        .side-details {
+             grid-column: span 1;
+        }
+        .form-section {
+            background: var(--main-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .form-section h3 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 230, 255, 0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color-dark);
+            font-size: 1rem;
+        }
+        .form-group .input-with-icon {
+            position: relative;
+        }
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #24292f;
+            color: var(--text-color-light);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .form-group textarea { padding: 12px; resize: vertical; padding-left: 12px; }
+        .form-group input:focus, .form-group textarea:focus {
+            background: #30363d;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 230, 255, 0.3);
+        }
+
+        /* Roles Section */
+        .role-input-group { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        .role-input-group input[type="text"] { flex-grow: 1; padding: 10px; padding-left:15px; }
+        .role-input-group input[type="number"] { width: 70px; flex-shrink: 0; padding: 10px; text-align: center; }
+        .btn-remove-role { background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; }
+        .btn-add-role { width: 100%; padding: 10px; background: rgba(40, 167, 69, 0.3); color: var(--success-color); border: 1px dashed var(--success-color); border-radius: 8px; cursor: pointer; }
+        .btn-add-role:hover { background: rgba(40, 167, 69, 0.5); }
+
+        /* Submit Button & Notifications */
+        .btn-post-idea { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--button-blue); 
+            color: white; 
+            border: none; 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 230, 255, 0.2);
+        }
+        .btn-post-idea:hover {
+            background: var(--button-hover-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 230, 255, 0.4);
+        }
+        .btn-post-idea:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+        #notification {
+            text-align: center; margin-top: 20px; padding: 15px; border-radius: 8px;
+            font-weight: 500; display: none; opacity: 0; transition: opacity 0.5s ease;
+        }
+        #notification.show { display: block; opacity: 1; }
+        #notification.success { background-color: rgba(40, 167, 69, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        #notification.error { background-color: rgba(220, 53, 69, 0.2); color: var(--error-color); border: 1px solid var(--error-color); }
+        
+        @media (max-width: 900px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: absolute; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 20px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="post-idea.html" class="active">Post Idea</a>
+            <a href="apply.html">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html">History</a>
+            <a href="help.html">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>Launch Your Next Big Idea</h2>
+            <p>Fill out the details below to find your future team.</p>
+        </div>
+        
+        <form id="postIdeaForm">
+            <div class="form-grid">
+                <div class="main-details">
+                    <div class="form-section">
+                        <h3><i class="fas fa-clipboard-list"></i> Project Details</h3>
+                        <div class="form-group">
+                            <label for="ideaTitle">Project Title</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lightbulb"></i>
+                                <input type="text" id="ideaTitle" placeholder="e.g., AI-powered Recipe App" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ideaDescription">Project Description</label>
+                            <textarea id="ideaDescription" rows="8" placeholder="Clearly describe your project's goal, features, and vision..." required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side-details">
+                    <div class="form-section">
+                        <h3><i class="fas fa-tags"></i> Tags & Keywords</h3>
+                        <div class="form-group">
+                            <label for="ideaTags">Project Tags</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="text" id="ideaTags" placeholder="javascript, ai, fintech...">
+                            </div>
+                            <small style="color: var(--text-color-dark); opacity: 0.8;">Separate tags with a comma (,)</small>
+                        </div>
+                    </div>
+                    <div class="form-section" style="margin-top: 30px;">
+                        <h3><i class="fas fa-users"></i> Team Roles Needed</h3>
+                        <div id="rolesContainer">
+                            <div class="role-input-group">
+                                <input type="text" class="role-name" placeholder="e.g., Frontend Developer" style="padding-left:15px;">
+                                <input type="number" class="role-count" min="1" value="1">
+                                <button type="button" class="btn-remove-role" onclick="removeRoleField(this)">-</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-role" onclick="addRoleField()">+ Add Role</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <button type="submit" class="btn-post-idea" id="submitButton">🚀 Launch Project</button>
+                <div id="notification"></div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af",
+            storageBucket: "collabspace-6d0af.appspot.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+        
+        document.getElementById("postIdeaForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submitButton = document.getElementById("submitButton");
+            submitButton.disabled = true;
+            submitButton.textContent = "Posting...";
+
+            const title = document.getElementById("ideaTitle").value.trim();
+            const description = document.getElementById("ideaDescription").value.trim();
+            
+            const tagsInput = document.getElementById("ideaTags").value;
+            const tags = tagsInput.toLowerCase().split(',')
+                           .map(tag => tag.trim())
+                           .filter(tag => tag !== "");
+
+            const roles = {};
+            document.querySelectorAll(".role-input-group").forEach(group => {
+                const name = group.querySelector(".role-name").value.trim();
+                const count = parseInt(group.querySelector(".role-count").value, 10);
+                if (name && count > 0) roles[name] = count;
+            });
+            
+            let imageUrl = null;
+
+            try {
+                await db.collection("ideas").add({
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    title,
+                    description,
+                    roles,
+                    tags,
+                    imageUrl,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                await checkAndAwardBadges(currentUser.uid);
+
+                showNotification("Idea posted successfully!", "success");
+                e.target.reset();
+            } catch (error) {
+                console.error("Error posting idea:", error);
+                showNotification("Failed to post idea. Please try again.", "error");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "🚀 Launch Project";
+            }
+        });
+        
+        function showNotification(message, type) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.textContent = '', 500); 
+            }, 4000);
+        }
+
+        async function checkAndAwardBadges(uid) {
+            const userRef = db.collection('users').doc(uid);
+            const ideasSnap = await db.collection('ideas').where('uid', '==', uid).get();
+            const userDoc = await userRef.get();
+            const userData = userDoc.data() || {};
+            const profileLink = `/profile.html?uid=${uid}`;
+            if (ideasSnap.size === 1 && !userData.badges?.initiator) {
+                await userRef.set({ badges: { initiator: true } }, { merge: true });
+                createNotification(uid, 'You earned the "Initiator" badge for posting your first project!', profileLink);
+            }
+            if (ideasSnap.size >= 5 && !userData.badges?.serialCreator) {
+                await userRef.set({ badges: { serialCreator: true } }, { merge: true });
+                createNotification(uid, 'You earned the "Serial Creator" badge for 5 projects!', profileLink);
+            }
+        }
+        function createNotification(uid, message, link) {
+            db.collection('users').doc(uid).collection('notifications').add({
+                senderName: "CollabSpace System",
+                message: message,
+                link: link || '#',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                read: false
+            });
+        }
+        function addRoleField() {
+            const container = document.getElementById("rolesContainer");
+            const div = document.createElement("div");
+            div.className = "role-input-group";
+            div.innerHTML = `<input type="text" class="role-name" placeholder="e.g., UI/UX Designer" style="padding-left:15px;"><input type="number" class="role-count" min="1" value="1"><button type="button" class="btn-remove-role" onclick="removeRoleField(this)">-</button>`;
+            container.appendChild(div);
+        }
+        function removeRoleField(button) {
+            if (document.querySelectorAll(".role-input-group").length > 1) {
+                button.closest(".role-input-group").remove();
+            }
+        }
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            if (!dot) return;
+            db.collection('users').doc(uid).collection('notifications')
+              .where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  dot.style.display = snapshot.empty ? 'none' : 'block';
+              }, console.error);
+        }
+        function logout() {
+            auth.signOut().then(() => window.location.replace("login.html"));
+        }
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

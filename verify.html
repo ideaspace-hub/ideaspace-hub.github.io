@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - CollabSpace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 90%;
+            background: var(--main-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+        }
+
+        .container h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+
+        .container p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-color-dark);
+            margin-bottom: 30px;
+        }
+
+        .message-box {
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .message-box.active {
+            display: block;
+        }
+
+        .message-box.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message-box.error {
+            background-color: rgba(248, 81, 73, 0.2);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+
+        .login-btn {
+            display: none; /* Hidden by default */
+            width: fit-content;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            background: var(--button-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CollabSpace Email Verification</h1>
+        <div id="message" class="message-box active">
+            <i class="fas fa-spinner fa-spin"></i> Verifying your email, please wait...
+        </div>
+        <a id="loginButton" href="login.html" class="login-btn">Go to Login</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af",
+            storageBucket: "collabspace-6d0af.firebasestorage.app",
+            messagingSenderId: "19918134739",
+            appId: "1:19918134739:web:3c3e2046024466dd2ea326",
+            measurementId: "G-31K3YSWDYP"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const oobCode = urlParams.get('oobCode');
+        const messageBox = document.getElementById('message');
+        const loginButton = document.getElementById('loginButton');
+
+        if (mode === 'verifyEmail' && oobCode) {
+            auth.applyActionCode(oobCode)
+                .then(() => {
+                    messageBox.innerHTML = "✅ Your email has been verified successfully!";
+                    messageBox.className = "message-box active success";
+                    loginButton.style.display = 'block';
+                })
+                .catch((error) => {
+                    messageBox.innerHTML = `❌ Verification failed: ${error.message}`;
+                    messageBox.className = "message-box active error";
+                });
+        } else {
+            messageBox.innerHTML = "⚠️ Invalid verification link.";
+            messageBox.className = "message-box active error";
+        }
+    </script>
+</body>
+</html>

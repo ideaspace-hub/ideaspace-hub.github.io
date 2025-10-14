@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --warn-color: #ffc107;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            padding-top: 70px;
+        }
+        .navbar a.active {
+            border-bottom: 2px solid  var(--accent-color);
+            padding-bottom: 4px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; transition: color 0.3s ease, transform 0.2s ease; }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        
+        .notification-link { position: relative; }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
+        
+        .container { max-width: 1200px; margin: 50px auto; padding: 40px; color: var(--text-color-light); }
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 30px; font-size: 2.2rem; }
+        h3 { color: var(--accent-color); margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid rgba(0, 230, 255, 0.3); padding-bottom: 10px; }
+        
+        .project-section, .applications-section { margin-bottom: 40px; }
+        .project-grid, .application-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 20px; }
+        
+        .project-card, .application-card {
+            background: var(--main-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            color: var(--text-color-light);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .project-card:hover, .application-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .project-card h4 { font-size: 1.6rem; margin: 0 0 10px; color: var(--primary-color); }
+        .project-card p, .application-card p { font-size: 0.95rem; color: var(--text-color-dark); margin-bottom: 10px; }
+        .project-card .roles-needed { font-size: 0.9rem; color: var(--text-color-dark); margin-top: auto; padding-top: 10px; border-top: 1px dashed rgba(0, 230, 255, 0.2); }
+        
+        .application-card h5 { font-size: 1.3rem; margin-top: 0; color: var(--primary-color); }
+        .application-card .status { font-weight: bold; }
+        .application-card .status.accepted { color: #28a745; }
+        .application-card .status.rejected { color: #dc3545; }
+        .application-actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .application-actions button, .application-actions a { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s ease; color: white; text-decoration: none; }
+        .btn-accept { background-color: #28a745; }
+        .btn-reject { background-color: #dc3545; }
+        .btn-contact { background-color: #007bff; }
+        .no-content-message { text-align: center; color: var(--text-color-dark); margin-top: 30px; font-size: 1.1rem; grid-column: 1 / -1; }
+        
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: fixed; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 20px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+            .container { margin: 20px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="post-idea.html">Post Idea</a>
+            <a href="apply.html">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html" >History</a>
+            <a href="help.html">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Your Dashboard</h2>
+        <div class="project-section">
+            <h3>Your Posted Projects</h3>
+            <div id="postedProjectsGrid" class="project-grid"></div>
+        </div>
+        <div class="project-section">
+            <h3>Your Joined Projects</h3>
+            <div id="joinedProjectsGrid" class="project-grid"></div>
+        </div>
+        
+        <div class="project-section">
+            <h3>Your Applied Projects</h3>
+            <div id="appliedProjectsGrid" class="project-grid"></div>
+        </div>
+        <div class="applications-section">
+            <h3>Applications to Your Projects</h3>
+            <div id="applicationsReceived" class="application-list"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+          authDomain: "collabspace-6d0af.firebaseapp.com",
+          projectId: "collabspace-6d0af",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        const postedProjectsGrid = document.getElementById("postedProjectsGrid");
+        const joinedProjectsGrid = document.getElementById("joinedProjectsGrid");
+        const appliedProjectsGrid = document.getElementById("appliedProjectsGrid");
+        const applicationsReceivedDiv = document.getElementById("applicationsReceived");
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+                loadDashboardData(user.uid);
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        async function loadDashboardData(currentUid) {
+            postedProjectsGrid.innerHTML = `<p class="no-content-message">Loading...</p>`;
+            joinedProjectsGrid.innerHTML = `<p class="no-content-message">Loading...</p>`;
+            appliedProjectsGrid.innerHTML = `<p class="no-content-message">Loading...</p>`;
+            applicationsReceivedDiv.innerHTML = `<p class="no-content-message">Loading...</p>`;
+
+            try {
+                const postedSnapshot = await db.collection("ideas").where("uid", "==", currentUid).orderBy("createdAt", "desc").get();
+                postedProjectsGrid.innerHTML = "";
+                if (postedSnapshot.empty) {
+                    postedProjectsGrid.innerHTML = `<p class="no-content-message">You haven't posted any projects yet.</p>`;
+                } else {
+                    postedSnapshot.forEach(doc => displayProjectCard({ id: doc.id, ...doc.data() }, postedProjectsGrid));
+                }
+
+                // Load all applications for the current user
+                const allAppsSnapshot = await db.collection("applications").where("uid", "==", currentUid).orderBy("createdAt", "desc").get();
+                const acceptedProjectIds = [];
+                const appliedProjectsWithStatus = [];
+
+                allAppsSnapshot.forEach(doc => {
+                    const appData = doc.data();
+                    if (appData.status === "Accepted") {
+                        acceptedProjectIds.push(appData.projectId);
+                    } else {
+                        appliedProjectsWithStatus.push({ id: doc.id, ...appData });
+                    }
+                });
+
+                // Load Joined Projects
+                joinedProjectsGrid.innerHTML = "";
+                if (acceptedProjectIds.length === 0) {
+                    joinedProjectsGrid.innerHTML = `<p class="no-content-message">You haven't joined any projects yet.</p>`;
+                } else {
+                    const joinedSnapshot = await db.collection("ideas").where(firebase.firestore.FieldPath.documentId(), "in", acceptedProjectIds).get();
+                    joinedSnapshot.forEach(doc => displayProjectCard({ id: doc.id, ...doc.data() }, joinedProjectsGrid));
+                }
+
+                // Load Applied Projects
+                appliedProjectsGrid.innerHTML = "";
+                if (appliedProjectsWithStatus.length === 0) {
+                    appliedProjectsGrid.innerHTML = `<p class="no-content-message">You have no pending applications.</p>`;
+                } else {
+                    for (const app of appliedProjectsWithStatus) {
+                        await displayAppliedProjectCard(app, appliedProjectsGrid);
+                    }
+                }
+
+                // Applications to Your Projects
+                const postedProjectIds = postedSnapshot.docs.map(doc => doc.id);
+                applicationsReceivedDiv.innerHTML = "";
+
+                if (postedProjectIds.length === 0) {
+                    applicationsReceivedDiv.innerHTML = `<p class="no-content-message">No applications to show.</p>`;
+                    return;
+                }
+                
+                const projectsMap = {};
+                postedSnapshot.forEach(doc => {
+                    const projectData = doc.data();
+                    projectsMap[doc.id] = {
+                        roles: projectData.roles,
+                        completed: projectData.completed || false
+                    };
+                });
+
+                const appsReceivedSnapshot = await db.collection("applications").where("projectId", "in", postedProjectIds).orderBy("createdAt", "desc").get();
+                let applicationsFound = false;
+                
+                if (!appsReceivedSnapshot.empty) {
+                    for (const doc of appsReceivedSnapshot.docs) {
+                        const app = doc.data();
+                        const project = projectsMap[app.projectId];
+                        
+                        if (project && !project.completed && project.roles[app.role] > 0) {
+                            displayApplicationCard({ id: doc.id, ...app });
+                            applicationsFound = true;
+                        }
+                    }
+                }
+                
+                if (!applicationsFound) {
+                    applicationsReceivedDiv.innerHTML = `<p class="no-content-message">No new applications for active projects.</p>`;
+                }
+            } catch (error) {
+                console.error("Error loading dashboard data:", error);
+            }
+        }
+
+        function displayProjectCard(project, targetElement) {
+            const card = document.createElement("div");
+            card.className = "project-card";
+            card.innerHTML = `
+                <h4>${project.title}</h4>
+                <p>${project.description.substring(0, 100)}...</p>
+                <a href="project-details.html?id=${project.id}" class="btn-details">View Details</a>`;
+            targetElement.appendChild(card);
+        }
+        
+        async function displayAppliedProjectCard(app, targetElement) {
+            const card = document.createElement("div");
+            card.className = "project-card";
+            
+            const projectDoc = await db.collection("ideas").doc(app.projectId).get();
+            const projectTitle = projectDoc.exists ? projectDoc.data().title : "Unknown Project";
+            
+            let interviewDetails = '';
+            if (app.status === 'Interview Scheduled' && app.interviewDate) {
+                interviewDetails = `
+                    <p style="margin-top:10px;"><strong>Interview:</strong> ${app.interviewDate}</p>
+                    <a href="${app.interviewLink}" target="_blank" class="btn-contact">Join Interview</a>
+                `;
+            }
+            
+            card.innerHTML = `
+                <h4>${projectTitle}</h4>
+                <p>Applied as: <strong>${app.role}</strong></p>
+                <p>Status: <span class="status ${app.status.toLowerCase()}">${app.status}</span></p>
+                ${interviewDetails}
+                <a href="project-details.html?id=${app.projectId}" class="btn-details" style="margin-top: 15px;">View Details</a>
+            `;
+            targetElement.appendChild(card);
+        }
+
+        async function displayApplicationCard(app) {
+            const card = document.createElement("div");
+            card.className = "application-card";
+            const projectDoc = await db.collection("ideas").doc(app.projectId).get();
+            const projectTitle = projectDoc.exists ? projectDoc.data().title : "Unknown Project";
+
+            card.innerHTML = `
+                <h5>${projectTitle} - For ${app.role}</h5>
+                <p><strong>Applicant:</strong> ${app.name}</p>
+                <p><strong>Status:</strong> <span class="status ${app.status.toLowerCase()}">${app.status}</span></p>
+                <div class="application-actions">
+                    ${app.status === 'Pending' ? `
+                        <button class="btn-accept" onclick="updateApplicationStatus('${app.id}', '${app.uid}', '${app.name}', '${projectTitle}', 'Accepted')">Accept</button>
+                        <button class="btn-reject" onclick="updateApplicationStatus('${app.id}', '${app.uid}', '${app.name}', '${projectTitle}', 'Rejected')">Reject</button>
+                    ` : ''}
+                    <a href="mailto:${app.email}" class="btn-contact">Contact</a>
+                </div>`;
+            applicationsReceivedDiv.appendChild(card);
+        }
+
+        async function updateApplicationStatus(appId, applicantUid, applicantName, projectTitle, newStatus) {
+            try {
+                await db.collection("applications").doc(appId).update({ status: newStatus });
+                
+                await db.collection('users').doc(applicantUid).collection('notifications').add({
+                    senderName: "Project Owner",
+                    message: `Your application for '${projectTitle}' has been ${newStatus}.`,
+                    link: '/history.html',
+                    read: false,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                loadDashboardData(auth.currentUser.uid);
+            } catch (error) {
+                console.error("Error updating status:", error);
+            }
+        }
+
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            if (!dot) return;
+
+            db.collection('users').doc(uid).collection('notifications')
+              .where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  if (!snapshot.empty) {
+                      dot.style.display = 'block';
+                  } else {
+                      dot.style.display = 'none';
+                  }
+              });
+        }
+
+        function logout() { auth.signOut().then(() => { window.location.replace("login.html"); }); }
+        function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+    </script>
+</body>
+</html>

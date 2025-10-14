@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Certificate - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--dark-bg); 
+            color: var(--text-color-light); 
+            text-align: center; 
+            padding-top: 100px; 
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 600px; 
+            width: 100%;
+            margin: auto;
+            background: var(--main-bg);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+        h1 { color: var(--primary-color); }
+        p { color: var(--text-color-dark); }
+        input { 
+            width: 80%; 
+            padding: 12px; 
+            font-size: 1rem; 
+            border-radius: 5px; 
+            border: 1px solid var(--border-color); 
+            background: #24292f; 
+            color: var(--text-color-light); 
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 230, 255, 0.5);
+        }
+        button { 
+            padding: 12px 25px; 
+            margin-top: 15px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            background: var(--button-blue); 
+            color: white; 
+            border: none; 
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: var(--button-hover-blue);
+            transform: translateY(-2px);
+        }
+        #result { 
+            margin-top: 30px; 
+            padding: 20px; 
+            border-radius: 8px; 
+            min-height: 50px;
+            text-align: left;
+        }
+        .success { background-color: rgba(40, 167, 69, 0.1); border: 1px solid var(--success-color); color: var(--success-color); }
+        .error { background-color: rgba(248, 81, 73, 0.1); border: 1px solid var(--error-color); color: var(--error-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verify a Certificate</h1>
+        <p>Enter the unique Certificate ID to verify its authenticity.</p>
+        <input type="text" id="certIdInput" placeholder="e.g., CS-GTeL-polis-A8Xk">
+        <button onclick="verifyCertificate()">Verify</button>
+        <div id="result"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        async function verifyCertificate() {
+            const resultDiv = document.getElementById('result');
+            const certId = document.getElementById('certIdInput').value.trim();
+            if (!certId) { return; }
+
+            resultDiv.innerHTML = "Verifying...";
+            resultDiv.className = "";
+
+            try {
+                const snap = await db.collection('applications')
+                    .where('certificateId', '==', certId)
+                    .limit(1).get();
+
+                if (snap.empty) {
+                    throw new Error("This Certificate ID is not valid.");
+                }
+
+                const appData = snap.docs[0].data();
+                const projectDoc = await db.collection('ideas').doc(appData.projectId).get();
+                const projectData = projectDoc.data();
+                const tier = appData.certificateTier || 'Uncertified';
+
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Certificate is Valid</h3>
+                    <p><strong>Issued to:</strong> ${appData.certificateName}</p>
+                    <p><strong>Project:</strong> ${projectData.title}</p>
+                    <p><strong>Role:</strong> ${appData.role}</p>
+                    <p><strong>Tier:</strong> <span style="font-weight: bold; color: ${getTierColor(tier)}">${tier}</span></p>
+                `;
+
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `<h3>❌ Verification Failed</h3><p>${error.message}</p>`;
+            }
+        }
+        
+        function getTierColor(tier) {
+            switch(tier) {
+                case 'Silver':
+                    return '#c0c0c0';
+                case 'Gold':
+                    return '#ffc107';
+                case 'Platinum':
+                    return '#e5e4e2';
+                default:
+                    return '#c9d1d9';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CollabSpace Chat</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+        }
+        .navbar a.active {
+            border-bottom: 2px solid  var(--accent-color);
+            padding-bottom: 4px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .navbar a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .navbar a:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        .navbar strong {
+            font-size: 1.4rem;
+            color: #ffffff;
+        }
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+        .notification-link {
+            position: relative;
+        }
+        #notification-dot {
+            display: none;
+            position: absolute;
+            top: -2px;
+            right: -12px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid var(--dark-bg);
+        }
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--main-bg);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 17px;
+            background: #24292f;
+            color: var(--text-color-light);
+            outline: none;
+        }
+        input:disabled {
+            background: #24292f;
+            cursor: not-allowed;
+            color: var(--text-color-dark);
+        }
+        #chatBox {
+            height: 450px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--dark-bg);
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 75%;
+            word-wrap: break-word;
+            align-self: flex-start;
+            background: rgba(0, 230, 255, 0.1);
+            line-height: 1.4;
+        }
+        .message.self {
+            align-self: flex-end;
+            background: rgba(0, 119, 255, 0.2);
+        }
+        .message strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.9em;
+            color: var(--accent-color);
+        }
+        .message .timestamp {
+            font-size: 0.75em;
+            color: var(--text-color-dark);
+            margin-top: 5px;
+            text-align: right;
+        }
+        .input-group { display: flex; gap: 10px; }
+        #messageInput { flex: 1; margin-bottom: 0; padding-left: 15px; }
+        #sendButton {
+            padding: 12px 25px;
+            font-size: 17px;
+            background: var(--button-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #sendButton:hover {
+            background: var(--button-hover-blue);
+            transform: translateY(-2px);
+        }
+        #sendButton:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: absolute; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 20px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="post-idea.html">Post Idea</a>
+        <a href="apply.html">Apply</a>
+        <a href="search.html">Search</a>
+        <a id="myProfileLink" href="#">My Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="interview.html">Interview</a>
+        <a href="chat.html" class="active">Chat</a>
+        <a href="history.html">History</a>
+        <a href="help.html">Help & Support</a>
+        <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+</div>
+
+<div class="container">
+    <h2>💬 Project Chat Room</h2>
+    <select id="projectSelect">
+        <option value="" disabled selected>Loading your projects...</option>
+    </select>
+    <div id="chatBox">
+        <p style="text-align: center; margin-top: 20px;">Please select a project to start chatting.</p>
+    </div>
+    <div class="input-group">
+        <input type="text" id="messageInput" placeholder="Select a project to enable chat..." disabled/>
+        <button id="sendButton" disabled>Send</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+        authDomain: "collabspace-6d0af.firebaseapp.com",
+        projectId: "collabspace-6d0af",
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    let currentUser = null;
+    let unsubscribeMessages = null;
+
+    const projectSelect = document.getElementById("projectSelect");
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+            loadUserProjects();
+            listenForUnreadNotifications(user.uid);
+        } else {
+            window.location.replace("login.html");
+        }
+    });
+
+    async function loadUserProjects() {
+        const projectTitles = new Map();
+        
+        const postedSnap = await db.collection("ideas").where("uid", "==", currentUser.uid).get();
+        postedSnap.forEach(doc => projectTitles.set(doc.id, doc.data().title));
+
+        const acceptedAppsSnap = await db.collection("applications").where("uid", "==", currentUser.uid).where("status", "==", "Accepted").get();
+        if (!acceptedAppsSnap.empty) {
+            const acceptedProjectIds = acceptedAppsSnap.docs.map(doc => doc.data().projectId);
+            if (acceptedProjectIds.length > 0) {
+                const joinedSnap = await db.collection("ideas").where(firebase.firestore.FieldPath.documentId(), "in", acceptedProjectIds).get();
+                joinedSnap.forEach(doc => projectTitles.set(doc.id, doc.data().title));
+            }
+        }
+
+        projectSelect.innerHTML = `<option value="" disabled selected>Select a Project Chat</option>`;
+        projectTitles.forEach((title, id) => {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = title;
+            projectSelect.appendChild(option);
+        });
+    }
+
+    function loadMessages(projectId) {
+        if (unsubscribeMessages) unsubscribeMessages();
+        chatBox.innerHTML = "<p style='text-align:center;'>Loading messages...</p>";
+
+        unsubscribeMessages = db.collection("ideas").doc(projectId).collection("chats")
+            .orderBy("timestamp")
+            .onSnapshot(snapshot => {
+                chatBox.innerHTML = "";
+                if (snapshot.empty) {
+                    chatBox.innerHTML = "<p style='text-align:center;'>No messages yet. Be the first to say hi!</p>";
+                }
+                snapshot.forEach(doc => {
+                    const msg = doc.data();
+                    const messageClass = (msg.uid === currentUser.uid) ? "message self" : "message";
+                    const timestamp = msg.timestamp ? msg.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = messageClass;
+                    messageDiv.innerHTML = `<strong>${msg.name}</strong><p>${msg.text}</p><div class="timestamp">${timestamp}</div>`;
+                    chatBox.appendChild(messageDiv);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, error => {
+                console.error("Error loading messages: ", error);
+                chatBox.innerHTML = "<p style='text-align:center;'>Could not load messages.</p>";
+            });
+    }
+
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        const projectId = projectSelect.value;
+        if (!text || !projectId) return;
+
+        db.collection("ideas").doc(projectId).collection("chats").add({
+            uid: currentUser.uid,
+            name: currentUser.displayName,
+            text: text,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        messageInput.value = "";
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
+    
+    projectSelect.addEventListener("change", () => {
+        const projectId = projectSelect.value;
+        if (projectId) {
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.placeholder = "Type a message...";
+            loadMessages(projectId);
+        } else {
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            messageInput.placeholder = "Select a project to enable chat...";
+        }
+    });
+
+    function listenForUnreadNotifications(uid) {
+        const dot = document.getElementById('notification-dot');
+        if (!dot) return;
+
+        db.collection('users').doc(uid).collection('notifications')
+          .where('read', '==', false)
+          .onSnapshot(snapshot => {
+              if (!snapshot.empty) {
+                  dot.style.display = 'block';
+              } else {
+                  dot.style.display = 'none';
+              }
+          }, error => {
+              console.error("Error listening for notifications:", error);
+});
+    }
+
+    function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+    function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+</script>
+
+</body>
+</html>

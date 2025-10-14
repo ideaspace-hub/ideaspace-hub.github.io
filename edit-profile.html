@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-green: linear-gradient(45deg, #28a745, #218838);
+            --button-hover-green: linear-gradient(45deg, #1f7b35, #1a6d2f);
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            padding-top: 70px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a {
+            color: var(--primary-color); text-decoration: none; margin-left: 25px;
+            font-weight: 500; transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        .notification-link { position: relative; }
+        #notification-dot {
+            display: none; position: absolute; top: -2px; right: -12px;
+            width: 8px; height: 8px; background-color: #ff4d4d;
+            border-radius: 50%; border: 1px solid var(--dark-bg);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background: var(--main-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 30px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-color-dark); }
+        input, textarea {
+            width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px;
+            border: 1px solid var(--border-color); background: #24292f;
+            color: var(--text-color-light); font-size: 16px; outline: none; box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 230, 255, 0.5);
+        }
+        
+        .profile-pic-container { text-align: center; margin-bottom: 20px; }
+        .profile-pic-label {
+            cursor: pointer; width: 120px; height: 120px; border-radius: 50%;
+            margin: 0 auto; background: #24292f;
+            border: 2px dashed var(--border-color); display: flex; justify-content: center;
+            align-items: center; transition: all 0.3s ease;
+        }
+        .profile-pic-label:hover { background: #30363d; border-color: var(--primary-color); }
+        .profile-pic-label img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary-color); }
+        #profilePicInput { display: none; }
+
+        .skills-section { margin-top: 20px; }
+        #skillsContainer { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .skill-tag {
+            background: #24292f; color: var(--primary-color); padding: 5px 10px;
+            border-radius: 5px; display: flex; align-items: center; gap: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .skill-tag .remove-skill { cursor: pointer; font-weight: bold; color: var(--error-color); }
+        #skillInput { margin-bottom: 10px; padding-left: 12px; }
+
+        button {
+            width: 100%; padding: 15px; background: var(--button-green);
+            color: white; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 1.1rem; font-weight: 600; transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+        button:hover {
+            background: var(--button-hover-green);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+        }
+        button:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .notification {
+            text-align: center; margin-top: 20px; padding: 15px; border-radius: 8px;
+            font-weight: 500; display: none; opacity: 0; transition: opacity 0.5s ease;
+        }
+        .notification.show { display: block; opacity: 1; }
+        .notification.success { background-color: rgba(40, 167, 69, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        .notification.error { background-color: rgba(220, 53, 69, 0.2); color: var(--error-color); border: 1px solid var(--error-color); }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links {
+                display: none; flex-direction: column; width: 100%;
+                position: absolute; top: 65px; left: 0;
+                background: rgba(22, 27, 34, 0.95); padding: 20px 0;
+            }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="post-idea.html">Post Idea</a>
+        <a href="apply.html">Apply</a>
+        <a href="search.html">Search</a>
+        <a id="myProfileLink" href="#">My Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="interview.html">Interview</a>
+        <a href="chat.html">Chat</a>
+        <a href="history.html">History</a>
+        <a href="help.html">Help & Support</a>
+        <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Edit Your Profile</h2>
+    <form id="editProfileForm">
+        <div class="profile-pic-container">
+            <label for="profilePicInput" class="profile-pic-label" id="profilePicLabel">
+                <img id="profilePicPreview" src="https://placehold.co/120x120/161b22/00e6ff?text=?" alt="Profile Preview">
+            </label>
+            <input type="file" id="profilePicInput" accept="image/*">
+        </div>
+
+        <label for="displayName">Display Name</label>
+        <input type="text" id="displayName" required>
+
+        <label for="bio">Bio</label>
+        <textarea id="bio" rows="4"></textarea>
+
+        <div class="skills-section">
+            <label for="skillInput">Skills (e.g., JavaScript, UI/UX)</label>
+            <div id="skillsContainer"></div>
+            <input type="text" id="skillInput" placeholder="Type a skill and press Enter">
+        </div>
+
+        <button type="submit" id="saveButton">Save Changes</button>
+        <div id="notification"></div>
+    </form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+        authDomain: "collabspace-6d0af.firebaseapp.com",
+        projectId: "collabspace-6d0af",
+        storageBucket: "collabspace-6d0af.appspot.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+
+    let currentUser = null;
+    let userSkills = [];
+    let profilePicFile = null;
+
+    const profilePicInput = document.getElementById('profilePicInput');
+    const profilePicPreview = document.getElementById('profilePicPreview');
+    const displayNameInput = document.getElementById('displayName');
+    const bioInput = document.getElementById('bio');
+    const skillsContainer = document.getElementById('skillsContainer');
+    const skillInput = document.getElementById('skillInput');
+    const editProfileForm = document.getElementById('editProfileForm');
+    const notification = document.getElementById('notification');
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('myProfileLink').href = `/profile.html?uid=${user.uid}`;
+            listenForUnreadNotifications(user.uid);
+            loadUserData();
+        } else {
+            window.location.replace("/login.html");
+        }
+    });
+
+    async function loadUserData() {
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            displayNameInput.value = userData.displayName || '';
+            bioInput.value = userData.bio || '';
+            profilePicPreview.src = userData.photoURL || 'https://placehold.co/120x120/161b22/00e6ff?text=?';
+            userSkills = userData.skills || [];
+            renderSkills();
+        }
+    }
+
+    profilePicInput.addEventListener('change', (e) => {
+        profilePicFile = e.target.files[0];
+        if (profilePicFile) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                profilePicPreview.src = event.target.result;
+            }
+            reader.readAsDataURL(profilePicFile);
+        }
+    });
+
+    skillInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const skillName = skillInput.value.trim();
+            if (skillName && !userSkills.find(s => s.skillName.toLowerCase() === skillName.toLowerCase())) {
+                userSkills.push({ skillName: skillName, endorsedBy: [] });
+                renderSkills();
+            }
+            skillInput.value = '';
+        }
+    });
+
+    function renderSkills() {
+        skillsContainer.innerHTML = '';
+        userSkills.forEach(skill => {
+            const tag = document.createElement('div');
+            tag.className = 'skill-tag';
+            tag.textContent = skill.skillName;
+            const removeBtn = document.createElement('span');
+            removeBtn.className = 'remove-skill';
+            removeBtn.innerHTML = '&nbsp;&times;';
+            removeBtn.onclick = () => {
+                userSkills = userSkills.filter(s => s.skillName !== skill.skillName);
+                renderSkills();
+            };
+            tag.appendChild(removeBtn);
+            skillsContainer.appendChild(tag);
+        });
+    }
+
+    editProfileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveButton = document.getElementById('saveButton');
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+
+        try {
+            let photoURL = currentUser.photoURL;
+            if (profilePicFile) {
+                const storageRef = storage.ref(`profile_pictures/${currentUser.uid}/${profilePicFile.name}`);
+                const snapshot = await storageRef.put(profilePicFile);
+                photoURL = await snapshot.ref.getDownloadURL();
+            }
+
+            const updatedData = {
+                displayName: displayNameInput.value.trim(),
+                bio: bioInput.value.trim(),
+                photoURL: photoURL,
+                skills: userSkills
+            };
+
+            await db.collection('users').doc(currentUser.uid).update(updatedData);
+            await currentUser.updateProfile({
+                displayName: updatedData.displayName,
+                photoURL: updatedData.photoURL
+            });
+
+            showNotification('Profile updated successfully!', 'success');
+            setTimeout(() => window.location.href = `/profile.html?uid=${currentUser.uid}`, 1500);
+
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            showNotification('Failed to update profile.', 'error');
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Changes';
+        }
+    });
+
+    function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = `notification ${type} show`;
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    function listenForUnreadNotifications(uid) {
+        const dot = document.getElementById('notification-dot');
+        if (!dot) return;
+        db.collection('users').doc(uid).collection('notifications')
+          .where('read', '==', false)
+          .onSnapshot(snapshot => {
+              dot.style.display = snapshot.empty ? 'none' : 'block';
+          }, console.error);
+    }
+    function logout() { auth.signOut().then(() => window.location.replace("/login.html")); }
+    function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+</script>
+
+</body>
+</html>

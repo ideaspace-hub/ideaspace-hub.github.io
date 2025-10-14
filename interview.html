@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Panel - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); padding-top: 70px; }
+        .navbar a.active { border-bottom: 2px solid var(--accent-color); padding-bottom: 4px; }
+        .navbar { background: rgba(22, 27, 34, 0.8); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; transition: color 0.3s ease, transform 0.2s ease; }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+
+        .notification-link { position: relative; }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
+
+        .glass-box { max-width: 1000px; margin: 50px auto; background: var(--main-bg); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid var(--border-color); }
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 30px; font-size: 2.2rem; }
+        .project-card { background: #24292f; padding: 25px; margin-bottom: 25px; border-radius: 15px; border: 1px solid var(--border-color); }
+        .project-card h3 { color: var(--primary-color); margin-top: 0; }
+        .project-card h4 { color: var(--accent-color); }
+        .applicant { background: #2b3138; padding: 15px; margin-top: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .applicant strong { color: var(--accent-color); }
+        
+        button, .interview-link { 
+            padding: 8px 16px; margin: 8px 8px 0 0; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease; text-decoration: none; display: inline-block; 
+        }
+        .accept { background-color: var(--success-color); color: white; }
+        .reject { background-color: var(--error-color); color: white; }
+        .interview, .interview-link { background: #007bff; color: white; }
+        
+        #interviewModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: var(--main-bg); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid var(--border-color); }
+        .modal-content input { 
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; 
+            border: 1px solid var(--border-color); background: #24292f; color: var(--text-color-light); box-sizing: border-box;
+        }
+        .button-group { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; }
+        
+        .notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; z-index: 3000; opacity: 0; transition: opacity 0.4s; }
+        .notification.show { opacity: 1; }
+        .notification.success { background-color: var(--success-color); }
+        .notification.error { background-color: var(--error-color); }
+
+        /* 🔹 Mobile Responsive */
+        @media (max-width: 768px) {
+          .navbar { padding: 15px 20px; }
+          .nav-links {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: 65px;
+            right: 0;
+            background: rgba(22, 27, 34, 0.95);
+            width: 200px;
+            padding: 15px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+          }
+          .nav-links.active { display: flex; }
+          .nav-links a { margin: 10px 0; }
+          .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+ <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="post-idea.html">Post Idea</a>
+    <a href="apply.html">Apply</a>
+    <a href="search.html">Search</a>
+    <a id="myProfileLink" href="#">My Profile</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html" class="active">Interview</a>
+    <a href="chat.html">Chat</a>
+    <a href="history.html">History</a>
+    <a href="help.html">Help & Support</a>
+    <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()">
+    <i class="fas fa-bars"></i>
+  </div>
+</div>
+
+<div class="glass-box">
+  <h2>Interview Panel</h2>
+  <div id="interviewPanel">
+    <p>Loading your projects...</p>
+  </div>
+</div>
+
+<div id="interviewModal">
+  <div class="modal-content">
+    <h3>📅 Schedule Interview</h3>
+    <input type="date" id="interviewDate">
+    <input type="time" id="interviewTime">
+    <input type="text" id="meetingLink" placeholder="Meeting Link">
+    <div class="button-group">
+      <button class="interview" onclick="sendInvite()">Schedule & Notify</button>
+      <button class="reject" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+    authDomain: "collabspace-6d0af.firebaseapp.com",
+    projectId: "collabspace-6d0af"
+  };
+  if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  const interviewPanel = document.getElementById('interviewPanel');
+  const notification = document.getElementById("notification");
+  let notificationTimeout;
+  let selectedAppId = null;
+  let selectedApplicantDetails = {};
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+      listenForUnreadNotifications(user.uid);
+      loadInterviewPanelData(user.uid);
+    } else {
+      window.location.replace("login.html");
+    }
+  });
+
+  function showNotification(message, type) {
+    clearTimeout(notificationTimeout);
+    notification.textContent = message;
+    notification.className = `notification ${type} show`;
+    notificationTimeout = setTimeout(() => {
+      notification.classList.remove('show');
+    }, 4000);
+  }
+
+  async function loadInterviewPanelData(uid) {
+    interviewPanel.innerHTML = '<p>Loading your projects...</p>';
+    try {
+        const projectsSnap = await db.collection('ideas').where('uid', '==', uid).get();
+        if (projectsSnap.empty) {
+            interviewPanel.innerHTML = "<p>You haven't posted any projects yet.</p>";
+            return;
+        }
+
+        let html = '';
+        let projectsWithApps = 0;
+        
+        for (const projectDoc of projectsSnap.docs) {
+            const project = projectDoc.data();
+            
+            // Fetch only pending applications for this project
+            const appsSnap = await db.collection('applications')
+                .where('projectId', '==', projectDoc.id)
+                .where('status', 'in', ['Pending', 'Interview Scheduled'])
+                .orderBy('createdAt')
+                .get();
+
+            if (!appsSnap.empty) {
+                projectsWithApps++;
+                html += `<div class="project-card"><h3>${project.title}</h3><h4>Applicants:</h4>`;
+                
+                appsSnap.forEach(appDoc => {
+                    const app = appDoc.data();
+                    const status = app.status || 'Pending';
+                    let controls = '';
+
+                    if (status === "Pending" || status === "Interview Scheduled") {
+                        controls = `
+                            <button class="accept" onclick="updateStatus('${appDoc.id}', '${app.uid}', '${app.name}', '${project.title}', 'Accepted')">Accept</button>
+                            <button class="reject" onclick="updateStatus('${appDoc.id}', '${app.uid}', '${app.name}', '${project.title}', 'Rejected')">Reject</button>
+                        `;
+                        if (status === "Interview Scheduled" && app.interviewDate) {
+                            controls += `<p style="margin-top:10px;"><strong>Interview:</strong> ${app.interviewDate} <a href="${app.interviewLink}" target="_blank" class="interview-link">Join Link</a></p>`;
+                        } else {
+                            controls = `<button class="interview" onclick="openModal('${appDoc.id}', '${app.uid}', '${app.name}', '${project.title}')">Schedule Interview</button>` + controls;
+                        }
+                    } else {
+                        controls = `<p><strong>Status:</strong> <span style="color:${status === 'Accepted' ? '#28a745' : '#dc3545'};">${status}</span></p>`;
+                    }
+
+                    html += `
+                        <div class="applicant">
+                            <p><strong>Name:</strong> ${app.name}</p>
+                            <p><strong>Role:</strong> ${app.role}</p>
+                            <div>${controls}</div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+        }
+
+        if (projectsWithApps === 0) {
+            interviewPanel.innerHTML = "<p style='text-align:center;'>No pending applications for your projects.</p>";
+        } else {
+            interviewPanel.innerHTML = html;
+        }
+    } catch (error) {
+      console.error("Error loading interview panel:", error);
+      interviewPanel.innerHTML = "<p>Could not load data.</p>";
+    }
+  }
+
+  function openModal(appId, applicantUid, name, projectTitle) {
+    selectedAppId = appId;
+    selectedApplicantDetails = { uid: applicantUid, name: name, projectTitle: projectTitle };
+    document.getElementById("interviewModal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("interviewModal").style.display = "none";
+  }
+
+  async function sendInvite() {
+    const date = document.getElementById("interviewDate").value;
+    const time = document.getElementById("interviewTime").value;
+    const link = document.getElementById("meetingLink").value;
+    if (!date || !time || !link) {
+      showNotification("Please fill all interview details.", "error");
+      return;
+    }
+    
+    try {
+      const interviewDateTime = `${date} at ${time}`;
+      await db.collection("applications").doc(selectedAppId).update({
+        interviewDate: interviewDateTime,
+        interviewLink: link,
+        status: "Interview Scheduled"
+      });
+
+      await db.collection('users').doc(selectedApplicantDetails.uid).collection('notifications').add({
+        senderName: "Project Owner",
+        message: `You have an interview for '${selectedApplicantDetails.projectTitle}' on ${date} at ${time}.`,
+        link: '/history.html', 
+        read: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      showNotification("Interview scheduled and applicant notified!", "success");
+      closeModal();
+      loadInterviewPanelData(auth.currentUser.uid);
+    } catch (err) {
+      console.error("Interview scheduling error:", err);
+      showNotification("Error scheduling interview.", "error");
+    }
+  }
+
+  async function updateStatus(appId, applicantUid, applicantName, projectTitle, status) {
+    try {
+      await db.collection("applications").doc(appId).update({ status: status });
+      await db.collection('users').doc(applicantUid).collection('notifications').add({
+        senderName: "Project Owner",
+        message: `Your application for '${projectTitle}' has been ${status}.`,
+        link: '/history.html',
+        read: false,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      showNotification(`Applicant ${status} and notification sent!`, "success");
+      loadInterviewPanelData(auth.currentUser.uid);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      showNotification("Failed to update status.", "error");
+    }
+  }
+
+  function listenForUnreadNotifications(uid) {
+    const dot = document.getElementById('notification-dot');
+    if (!dot) return;
+    db.collection('users').doc(uid).collection('notifications')
+      .where('read', '==', false)
+      .onSnapshot(snapshot => {
+        dot.style.display = snapshot.empty ? 'none' : 'block';
+      }, console.error);
+  }
+
+  function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+  function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+</script>
+
+</body>
+</html>

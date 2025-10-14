@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --primary-color: #00e6ff;
+            --accent-color: #8affff;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .welcome-message {
+            opacity: 0;
+            transform: scale(0.8);
+            animation: fadeInScale 2s ease-out forwards, fadeOut 1s ease-in 4s forwards;
+        }
+
+        .welcome-message h1 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(0, 230, 255, 0.5);
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        .welcome-message p {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-top: 10px;
+        }
+
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-message">
+        <h1>Welcome to the world where you can change your future.</h1>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af",
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Set the flag to false so the user doesn't see this screen again
+                db.collection('users').doc(user.uid).update({ firstTimeUser: false })
+                  .then(() => {
+                      // Redirect to the main page after the animation is complete
+                      setTimeout(() => {
+                          window.location.href = "index.html";
+                      }, 5000);
+                  })
+                  .catch(error => {
+                      console.error("Error updating user document:", error);
+                      // Fallback to redirect even if update fails
+                      setTimeout(() => {
+                          window.location.href = "index.html";
+                      }, 5000);
+                  });
+            } else {
+                // If no user is logged in, redirect them to the login page.
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+
+</body>
+</html>

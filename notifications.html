@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            padding-top: 70px;
+        }
+        .navbar a.active {
+            border-bottom: 2px solid  var(--accent-color);
+            padding-bottom: 4px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a {
+            color: var(--primary-color); text-decoration: none; margin-left: 25px;
+            font-weight: 500; transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .notification-list {
+            background: var(--main-bg);
+            border-radius: 15px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-bottom: 1px solid rgba(0, 230, 255, 0.1);
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            color: var(--text-color-light);
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background-color: rgba(0, 230, 255, 0.05);
+        }
+        .notification-item.unread {
+             border-left: 3px solid var(--primary-color);
+             background-color: rgba(0, 230, 255, 0.03);
+        }
+        .notification-item .icon {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+        .notification-item p {
+            margin: 0;
+            flex-grow: 1;
+            word-break: break-word; /* Corrected: Ensures long words break to a new line */
+            overflow-wrap: break-word; /* Corrected: A more modern alternative for long words */
+        }
+        .notification-item p strong {
+            color: #fff;
+        }
+        .notification-item .timestamp {
+            font-size: 0.8rem;
+            color: var(--text-color-dark);
+            flex-shrink: 0;
+            white-space: nowrap; /* Corrected: Prevents timestamp from wrapping unnecessarily */
+        }
+        .notification-link {
+            position: relative;
+        }
+        #notification-dot {
+            display: none;
+            position: absolute;
+            top: -2px;
+            right: -12px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid var(--dark-bg);
+        }
+         @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links {
+                display: none; flex-direction: column; width: 100%;
+                position: absolute; top: 65px; left: 0;
+                background: rgba(22, 27, 34, 0.95); padding: 20px 0;
+            }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+            .notification-item { flex-direction: column; align-items: flex-start; }
+            .notification-item .timestamp { margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="post-idea.html">Post Idea</a>
+        <a href="apply.html">Apply</a>
+        <a href="search.html">Search</a>
+        <a id="myProfileLink" href="#">My Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="interview.html">Interview</a>
+        <a href="chat.html">Chat</a>
+        <a href="history.html">History</a>
+        <a href="help.html">Help & Support</a>
+        <a href="notifications.html" class="notification-link active">Notifications<span id="notification-dot"></span></a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Notifications</h2>
+    <div class="notification-list" id="notificationList">
+        <p>Loading notifications...</p>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+        authDomain: "collabspace-6d0af.firebaseapp.com",
+        projectId: "collabspace-6d0af"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const notificationList = document.getElementById('notificationList');
+    let currentUser = null;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+            loadNotifications();
+            listenForUnreadNotifications(user.uid);
+        } else {
+            window.location.replace("login.html");
+        }
+    });
+
+    function loadNotifications() {
+        db.collection('users').doc(currentUser.uid).collection('notifications')
+          .orderBy('timestamp', 'desc').limit(30)
+          .onSnapshot(snapshot => {
+            if (snapshot.empty) {
+                notificationList.innerHTML = '<p style="text-align:center; padding: 20px;">You have no notifications.</p>';
+                return;
+            }
+            
+            notificationList.innerHTML = '';
+            const unreadIds = [];
+
+            snapshot.forEach(doc => {
+                const notif = doc.data();
+                const link = document.createElement('a');
+                link.href = notif.link || '#';
+                link.className = 'notification-item';
+                if (!notif.read) {
+                    link.classList.add('unread');
+                    unreadIds.push(doc.id);
+                }
+                
+                const time = notif.timestamp ? notif.timestamp.toDate().toLocaleString() : '';
+
+                link.innerHTML = `
+                    <span class="icon fas fa-info-circle"></span>
+                    <p><strong>${notif.senderName}</strong> ${notif.message}</p>
+                    <span class="timestamp">${time}</span>
+                `;
+                notificationList.appendChild(link);
+            });
+            
+            if (unreadIds.length > 0) {
+                markNotificationsAsRead(unreadIds);
+            }
+
+        }, error => {
+            console.error("Error loading notifications:", error);
+            notificationList.innerHTML = '<p>Could not load notifications.</p>';
+        });
+    }
+
+    function markNotificationsAsRead(ids) {
+        const batch = db.batch();
+        const userNotifsRef = db.collection('users').doc(currentUser.uid).collection('notifications');
+        
+        ids.forEach(id => {
+            const docRef = userNotifsRef.doc(id);
+            batch.update(docRef, { read: true });
+        });
+        
+        batch.commit().catch(err => {
+            console.error("Error marking notifications as read:", err);
+        });
+    }
+    
+    function listenForUnreadNotifications(uid) {
+        const dot = document.getElementById('notification-dot');
+        if (!dot) return;
+
+        db.collection('users').doc(uid).collection('notifications')
+          .where('read', '==', false)
+          .onSnapshot(snapshot => {
+              if (!snapshot.empty) {
+                  dot.style.display = 'block';
+              } else {
+                  dot.style.display = 'none';
+              }
+          }, error => {
+              console.error("Error listening for notifications:", error);
+          });
+    }
+
+    function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+    function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+</script>
+
+</body>
+</html>

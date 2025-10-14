@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+        }
+        .navbar a.active {
+            border-bottom: 2px solid  var(--accent-color);
+            padding-bottom: 4px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .navbar a:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        .navbar strong {
+            font-size: 1.4rem;
+            color: #ffffff;
+        }
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+        .notification-link {
+            position: relative;
+        }
+        #notification-dot {
+            display: none;
+            position: absolute;
+            top: -2px;
+            right: -12px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid var(--dark-bg);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 40px;
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+        }
+        h3 {
+            color: var(--accent-color);
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 230, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .history-card {
+            background: var(--main-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color-light);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .history-card h4 {
+            font-size: 1.4rem;
+            margin: 0 0 10px;
+            color: var(--primary-color);
+        }
+        .status-badge {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .status-accepted, .status-completed { background-color: rgba(40, 167, 69, 0.2); color: #28a745; }
+        .status-rejected { background-color: rgba(220, 53, 69, 0.2); color: #dc3545; }
+        .status-pending, .status-interview-scheduled { background-color: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-posted { background-color: rgba(0, 123, 255, 0.2); color: #007bff; }
+        
+        .no-content {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-color-dark);
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: absolute; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 20px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+        <div class="navbar">
+            <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="post-idea.html">Post Idea</a>
+            <a href="apply.html">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html" class="active">History</a>
+            <a href="help.html">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📜 Your Project History</h2>
+        <div class="posted-projects-section">
+            <h3>Your Posted Projects</h3>
+            <div id="postedHistoryGrid" class="history-grid"></div>
+        </div>
+        <div class="application-history-section">
+            <h3>Your Application History</h3>
+            <div id="applicationHistoryGrid" class="history-grid"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+                loadHistory();
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        async function loadHistory() {
+            const postedGrid = document.getElementById("postedHistoryGrid");
+            const applicationGrid = document.getElementById("applicationHistoryGrid");
+            postedGrid.innerHTML = '<p class="no-content">Loading...</p>';
+            applicationGrid.innerHTML = '<p class="no-content">Loading...</p>';
+
+            const postedSnap = await db.collection("ideas").where("uid", "==", currentUser.uid).orderBy("createdAt", "desc").get();
+            postedGrid.innerHTML = "";
+            if (postedSnap.empty) {
+                postedGrid.innerHTML = '<p class="no-content">You have not posted any projects.</p>';
+            } else {
+                postedSnap.forEach(doc => {
+                    const proj = doc.data();
+                    const card = document.createElement("div");
+                    card.className = "history-card";
+                    const status = proj.completed ? "Completed" : "Posted";
+                    const statusClass = proj.completed ? "status-completed" : "status-posted";
+                    card.innerHTML = `<h4>${proj.title}</h4><p>${proj.description.substring(0, 100)}...</p><div class="status-badge ${statusClass}">${status}</div>`;
+                    postedGrid.appendChild(card);
+                });
+            }
+
+            const appsSnap = await db.collection("applications").where("uid", "==", currentUser.uid).orderBy("createdAt", "desc").get();
+            applicationGrid.innerHTML = "";
+            
+            if (appsSnap.empty) {
+                applicationGrid.innerHTML = '<p class="no-content">You have not applied to any projects.</p>';
+                return;
+            }
+
+            const projectIds = [...new Set(appsSnap.docs.map(doc => doc.data().projectId))];
+
+            const projectsSnap = await db.collection("ideas").where(firebase.firestore.FieldPath.documentId(), "in", projectIds).get();
+            const projectsMap = new Map();
+            projectsSnap.forEach(doc => {
+                projectsMap.set(doc.id, doc.data().title);
+            });
+
+            appsSnap.forEach(doc => {
+                const app = doc.data();
+                const projectTitle = projectsMap.get(app.projectId) || "Project not found";
+                const card = document.createElement("div");
+                card.className = "history-card";
+                const statusClass = `status-${app.status.toLowerCase().replace(/\s+/g, '-')}`;
+                card.innerHTML = `
+                    <h4>${projectTitle}</h4>
+                    <p>You applied for the role: <strong>${app.role}</strong>.</p>
+                    <div class="status-badge ${statusClass}">${app.status}</div>`;
+                applicationGrid.appendChild(card);
+            });
+        }
+        
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            if (!dot) return;
+
+            db.collection('users').doc(uid).collection('notifications')
+              .where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  if (!snapshot.empty) {
+                      dot.style.display = 'block';
+                  } else {
+                      dot.style.display = 'none';
+                  }
+              });
+        }
+
+        function logout() { auth.signOut().then(() => window.location.replace("login.html")); }
+        function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
+    </script>
+</body>
+</html>

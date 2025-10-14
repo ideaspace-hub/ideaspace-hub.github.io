@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - CollabSpace</title>
+  <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --dark-bg: #0d1117;
+      --main-bg: #161b22;
+      --border-color: #30363d;
+      --primary-color: #00e6ff; /* Teal/Cyan */
+      --accent-color: #8affff;
+      --text-color-light: #c9d1d9;
+      --text-color-dark: #7d8590;
+      --error-color: #f85149;
+      --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+      --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background: var(--dark-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-container {
+      width: 380px;
+      background: var(--main-bg);
+      border-radius: 20px;
+      padding: 40px;
+      color: var(--text-color-light);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-color);
+      z-index: 2;
+      position: relative;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+    .shake {
+      animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #24292f;
+      color: var(--text-color-light);
+      font-size: 17px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .login-container input::placeholder {
+      color: var(--text-color-dark);
+    }
+    .login-container input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 10px rgba(0, 230, 255, 0.5);
+    }
+    .login-container input.error {
+        border-color: var(--error-color);
+        box-shadow: 0 0 10px rgba(248, 81, 73, 0.5);
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-top: -8px;
+      margin-bottom: 15px;
+    }
+
+    .forgot-password a {
+      font-size: 14px;
+      color: var(--accent-color);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .forgot-password a:hover {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      background: var(--button-blue);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 230, 255, 0.2);
+    }
+    .login-container button:hover {
+      background: var(--button-hover-blue);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 230, 255, 0.4);
+    }
+     .login-container button:disabled {
+        background: var(--border-color);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .login-container p {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text-color-dark);
+      font-size: 15px;
+    }
+
+    .login-container p a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .login-container p a:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+    
+    .notification {
+        position: absolute;
+        bottom: -70px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 500;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+    }
+    .notification.show {
+        opacity: 1;
+        visibility: visible;
+        bottom: -80px;
+    }
+    .notification.success {
+        background-color: #28a745;
+        color: white;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+    }
+    .notification.error {
+        background-color: var(--error-color);
+        color: white;
+        box-shadow: 0 0 15px rgba(248, 81, 73, 0.5);
+    }
+    .notification.info {
+        background-color: #17a2b8;
+        color: white;
+        box-shadow: 0 0 15px rgba(23, 162, 184, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container" id="loginContainer">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+
+    <div class="forgot-password">
+      <a href="#" id="forgot-link">Forgot Password?</a>
+    </div>
+
+    <button id="loginButton" onclick="login()">Login</button>
+    
+    <div class="forgot-password" id="resend-container" style="display: none; text-align: center; margin-top: 15px;">
+      <a href="#" id="resend-link">Resend Verification Email</a>
+    </div>
+
+    <p>Don’t have an account? <a href="signup.html" target="_top">Sign up</a></p>
+    <div id="notificationBox" class="notification"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+      authDomain: "collabspace-6d0af.firebaseapp.com",
+      projectId: "collabspace-6d0af"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
+    const loginContainer = document.getElementById("loginContainer");
+    const loginButton = document.getElementById("loginButton");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const notificationBox = document.getElementById("notificationBox");
+    const resendContainer = document.getElementById("resend-container");
+    let notificationTimeout;
+
+    function showNotification(message, type) {
+        clearTimeout(notificationTimeout);
+        notificationBox.textContent = message;
+        notificationBox.className = `notification ${type} show`;
+        notificationTimeout = setTimeout(() => {
+            notificationBox.classList.remove('show');
+        }, 4000);
+    }
+
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      // Reset UI state on each login attempt
+      loginContainer.classList.remove("shake");
+      emailInput.classList.remove("error");
+      passwordInput.classList.remove("error");
+      resendContainer.style.display = 'none';
+
+      if (!email || !password) {
+        showNotification("Please enter both email and password.", "error");
+        if (!email) emailInput.classList.add("error");
+        if (!password) passwordInput.classList.add("error");
+        loginContainer.classList.add("shake");
+        return;
+      }
+      
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+
+      try {
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          const user = userCredential.user;
+
+          if (user.emailVerified) {
+              // Redirect to the welcome page on successful, verified login
+              window.location.href = "welcome.html";
+          } else {
+              // If email is not verified, show a message and the "Resend" link
+              showNotification("⚠️ Please verify your email first.", "info");
+              resendContainer.style.display = 'block';
+              auth.signOut(); // Log them out so they can't proceed
+              loginButton.disabled = false;
+              loginButton.textContent = "Login";
+          }
+      } catch(error) {
+          // Handle incorrect credentials
+          showNotification("❌ Invalid email or password.", "error");
+          loginContainer.classList.add("shake");
+          emailInput.classList.add("error");
+          passwordInput.classList.add("error");
+          loginButton.disabled = false;
+          loginButton.textContent = "Login";
+      }
+    }
+
+    // Event listener for the "Resend Verification Email" link
+    document.getElementById("resend-link").addEventListener("click", async function(e) {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+            showNotification("Please enter your credentials to resend the email.", "error");
+            return;
+        }
+        
+        try {
+            // Firebase requires the user to be recently logged in to send a verification email
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            await userCredential.user.sendEmailVerification();
+            await auth.signOut(); // Sign out again immediately after sending
+            showNotification("✅ New verification email sent. Check your inbox.", "success");
+            resendContainer.style.display = 'none'; // Hide the link after sending
+        } catch (error) {
+            showNotification("❌ Could not send email. Please check your credentials.", "error");
+        }
+    });
+    
+    // Event listener for the "Forgot Password" link
+    document.getElementById("forgot-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) {
+        showNotification("Please enter your email to reset password.", "info");
+        emailInput.classList.add("error");
+        return;
+      }
+      auth.sendPasswordResetEmail(email)
+        .then(() => {
+          showNotification("✅ Password reset email sent. Check your inbox.", "success");
+        })
+        .catch((error) => {
+          showNotification("❌ " + error.message, "error");
+        });
+    });
+
+    // Allows users to press Enter to log in
+    passwordInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            login();
+        }
+    });
+
+    // Admin panel shortcut
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.altKey && event.key === 'c') {
+            window.location.href = 'admin-login.html';
+        }
+    });
+  </script>
+</body>
+</html>

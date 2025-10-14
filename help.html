@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Help & Support - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --success-color: #238636;
+            --error-color: #f85149;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); margin: 0; padding-top: 70px; }
+        .navbar { background: rgba(22, 27, 34, 0.8); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; }
+        .navbar a.active { border-bottom: 2px solid var(--accent-color); padding-bottom: 4px; }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        .container { max-width: 800px; margin: 40px auto; background: var(--main-bg); padding: 40px; border-radius: 15px; border: 1px solid var(--border-color); }
+        h1 { color: var(--primary-color); text-align: center; }
+        h2 { color: var(--accent-color); text-align: center; }
+        p { color: var(--text-color-dark); text-align: center; }
+        .tab-buttons { margin-bottom: 20px; border-bottom: 1px solid rgba(0, 230, 255, 0.2); text-align: center; }
+        .tab-buttons button { background: none; border: none; color: var(--primary-color); padding: 10px 15px; cursor: pointer; font-size: 1.1rem; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+        .tab-buttons button.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+        .form-section { display: none; padding: 20px; border-radius: 10px; background: #24292f; }
+        .form-section.active { display: block; }
+        .form-section h3 { color: var(--primary-color); margin-top: 0; }
+        textarea { width: 100%; min-height: 150px; background: var(--dark-bg); color: var(--text-color-light); border-radius: 5px; padding: 15px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; }
+        button[type="submit"] { 
+            width: 100%; padding: 15px; margin-top: 20px; 
+            background: var(--button-blue); 
+            color: white; border: none; border-radius: 8px; 
+            font-size: 1.1rem; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 230, 255, 0.2);
+        }
+        button[type="submit"]:hover {
+            background: var(--button-hover-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 230, 255, 0.4);
+        }
+        button[type="submit"]:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+        .notification { text-align: center; margin-top: 20px; padding: 15px; border-radius: 8px; display: none; }
+        .notification.success { background-color: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; }
+        
+        .notification-link { position: relative; }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
+
+        @media (max-width: 850px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: fixed; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 10px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; padding: 10px 0; text-align: center; width: 100%; border-bottom: none; }
+            .hamburger { display: block; }
+            .navbar a.active { background-color: rgba(0, 230, 255, 0.1); border-radius: 5px; width: 90%; margin: 5px auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="post-idea.html">Post Idea</a>
+            <a href="apply.html">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html">History</a>
+            <a href="help.html" class="active">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Help & Support</h1>
+        <p>Have an issue or a great idea? Let us know. Your feedback helps us improve CollabSpace.</p>
+        
+        <div class="tab-buttons">
+            <button class="active" onclick="showTab(event, 'complaintForm')">Submit a Complaint</button>
+            <button onclick="showTab(event, 'requestForm')">Request a Feature</button>
+        </div>
+
+        <div id="complaintForm" class="form-section active">
+            <h3>Complaint Box</h3>
+            <form onsubmit="submitComplaint(event)">
+                <textarea id="complaintMessage" placeholder="Please describe the issue you are facing in detail..." required></textarea>
+                <button type="submit">Submit Complaint</button>
+            </form>
+        </div>
+
+        <div id="requestForm" class="form-section">
+            <h3>Feature Request Box</h3>
+            <form onsubmit="submitRequest(event)">
+                <textarea id="requestMessage" placeholder="Describe the new feature you would like to see..." required></textarea>
+                <button type="submit">Submit Request</button>
+            </form>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let currentUser = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("active");
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.replace("login.html");
+            });
+        }
+
+        function showTab(event, tabId) {
+            document.querySelectorAll('.form-section').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-buttons button').forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        async function submitComplaint(event) {
+            event.preventDefault();
+            const message = document.getElementById('complaintMessage').value.trim();
+            if (!message || !currentUser) return;
+            const button = event.target.querySelector('button');
+            button.disabled = true;
+            await db.collection('complaints').add({
+                uid: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email,
+                message: message, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            button.disabled = false;
+            document.getElementById('complaintMessage').value = '';
+            showNotification('Thank you! Your complaint has been submitted.', 'success');
+        }
+
+        async function submitRequest(event) {
+            event.preventDefault();
+            const message = document.getElementById('requestMessage').value.trim();
+            if (!message || !currentUser) return;
+            const button = event.target.querySelector('button');
+            button.disabled = true;
+            await db.collection('featureRequests').add({
+                uid: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email,
+                message: message, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            button.disabled = false;
+            document.getElementById('requestMessage').value = '';
+            showNotification('Thank you for the suggestion! Your feature request has been submitted.', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            if (!dot) return;
+
+            db.collection('users').doc(uid).collection('notifications')
+              .where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  if (!snapshot.empty) {
+                      dot.style.display = 'block';
+                  } else {
+                      dot.style.display = 'none';
+                  }
+              }, console.error);
+        }
+    </script>
+</body>
+</html>

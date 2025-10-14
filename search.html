@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-color-light);
+            padding-top: 70px;
+        }
+        .navbar {
+            background: rgba(22, 27, 34, 0.8);
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .navbar a.active {
+            border-bottom: 2px solid  var(--accent-color);
+            padding-bottom: 4px;
+        }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a {
+            color: var(--primary-color); text-decoration: none; margin-left: 25px;
+            font-weight: 500; transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .navbar a:hover { color: var(--accent-color); transform: translateY(-2px); }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #24292f;
+            color: var(--text-color-light);
+            outline: none;
+            margin-bottom: 40px;
+        }
+        .results-section h2 {
+            color: var(--primary-color);
+            border-bottom: 1px solid rgba(0, 230, 255, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .user-card, .project-card {
+            background: var(--main-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-color-light);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .user-card:hover, .project-card:hover {
+            background: #24292f;
+            transform: translateY(-2px);
+        }
+        .user-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        .user-card .info h4 { margin: 0; color: var(--primary-color); }
+        .user-card .info p { margin: 5px 0 0; color: var(--text-color-dark); font-size: 0.9rem; }
+        .project-card h4 { margin: 0; color: var(--primary-color); }
+        .project-card p { margin: 5px 0 0; font-size: 0.9rem; color: var(--text-color-dark); }
+        
+        .notification-link { position: relative; }
+        #notification-dot {
+            display: none;
+            position: absolute;
+            top: -2px;
+            right: -12px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 1px solid var(--dark-bg);
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links {
+                display: none; flex-direction: column; width: 100%;
+                position: absolute; top: 65px; left: 0;
+                background: rgba(22, 27, 34, 0.95); padding: 20px 0;
+            }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; font-size: 18px; }
+            .hamburger { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="post-idea.html">Post Idea</a>
+        <a href="apply.html">Apply</a>
+        <a href="search.html" class="active">Search</a>
+        <a id="myProfileLink" href="#">My Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="interview.html">Interview</a>
+        <a href="chat.html">Chat</a>
+        <a href="history.html">History</a>
+        <a href="help.html">Help & Support</a>
+        <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+  </div>
+
+<div class="container">
+    <input type="text" id="searchInput" placeholder="Search for users or projects...">
+    <div id="resultsContainer">
+        </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+        authDomain: "collabspace-6d0af.firebaseapp.com",
+        projectId: "collabspace-6d0af"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('resultsContainer');
+    let debounceTimeout;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('myProfileLink').href = `/profile.html?uid=${user.uid}`;
+            listenForUnreadNotifications(user.uid);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const tag = urlParams.get('tag');
+            if (tag) {
+                searchInput.value = tag;
+                performSearch(tag, true);
+            }
+        } else {
+            window.location.replace("/login.html");
+        }
+    });
+
+    searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            performSearch(searchInput.value.trim(), false);
+        }, 300);
+    });
+
+    async function performSearch(query, isTagSearch = false) {
+        if (query.length < 1) {
+            resultsContainer.innerHTML = '';
+            return;
+        }
+        
+        resultsContainer.innerHTML = '<p>Searching...</p>';
+        const lowerCaseQuery = query.toLowerCase();
+
+        try {
+            let users = [];
+            let projects = [];
+
+            if (isTagSearch) {
+                const ideasSnap = await db.collection('ideas').where('tags', 'array-contains', lowerCaseQuery).get();
+                projects = ideasSnap.docs;
+            } else {
+                const usersRef = db.collection('users');
+                const usernameQuery = usersRef.where('username', '>=', lowerCaseQuery).where('username', '<=', lowerCaseQuery + '\uf8ff').get();
+                const displayNameQuery = usersRef.where('displayName', '>=', query).where('displayName', '<=', query + '\uf8ff').get();
+                
+                const ideasRef = db.collection('ideas');
+                const ideasSnap = await ideasRef.where('title', '>=', query).where('title', '<=', query + '\uf8ff').get();
+
+                const [usernameSnap, displayNameSnap, projectResults] = await Promise.all([usernameQuery, displayNameQuery, ideasSnap]);
+                
+                const usersMap = {};
+                usernameSnap.forEach(doc => usersMap[doc.id] = doc.data());
+                displayNameSnap.forEach(doc => usersMap[doc.id] = doc.data());
+
+                users = Object.values(usersMap);
+                projects = projectResults.docs;
+            }
+
+            renderResults(users, projects);
+
+        } catch (error) {
+            console.error("Search error:", error);
+            resultsContainer.innerHTML = '<p>Error performing search. You may need to create Firestore indexes.</p>';
+        }
+    }
+
+    function renderResults(users, projects) {
+        if (users.length === 0 && projects.length === 0) {
+            resultsContainer.innerHTML = '<p>No results found.</p>';
+            return;
+        }
+
+        let usersHTML = '';
+        if (users.length > 0) {
+            usersHTML = `
+                <div class="results-section">
+                    <h2>Users</h2>
+                    ${users.map(user => `
+                        <a href="/profile.html?uid=${user.uid}" class="user-card">
+                            <img src="${user.photoURL || 'https://placehold.co/50x50/161b22/00e6ff?text=' + user.displayName.charAt(0)}" alt="Profile Pic">
+                            <div class="info">
+                                <h4>${user.displayName}</h4>
+                                <p>@${user.username}</p>
+                            </div>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        let projectsHTML = '';
+        if (projects.length > 0) {
+            projectsHTML = `
+                <div class="results-section">
+                    <h2>Projects</h2>
+                    ${projects.map(doc => {
+                        const project = doc.data();
+                        return `
+                            <a href="/project-details.html?id=${doc.id}" class="project-card">
+                                <div class="info">
+                                    <h4>${project.title}</h4>
+                                    <p>${project.description.substring(0, 100)}...</p>
+                                </div>
+                            </a>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
+        resultsContainer.innerHTML = usersHTML + projectsHTML;
+    }
+
+    function listenForUnreadNotifications(uid) {
+        const dot = document.getElementById('notification-dot');
+        if (!dot) return;
+        db.collection('users').doc(uid).collection('notifications')
+          .where('read', '==', false)
+          .onSnapshot(snapshot => {
+              dot.style.display = snapshot.empty ? 'none' : 'block';
+          }, console.error);
+    }
+    function logout() {
+        auth.signOut().then(() => window.location.replace("/login.html"));
+    }
+
+    function toggleMenu() {
+        document.getElementById("navLinks").classList.toggle("active");
+    }
+</script>
+
+</body>
+</html>

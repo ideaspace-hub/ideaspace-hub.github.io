@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Projects - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --dark-bg: #0d1117;
+            --main-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #00e6ff; /* Teal/Cyan */
+            --accent-color: #8affff;
+            --text-color-light: #c9d1d9;
+            --text-color-dark: #7d8590;
+            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
+            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
+        }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); margin: 0; padding-top: 70px; }
+        .navbar { background: rgba(22, 27, 34, 0.8); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
+        .nav-links { display: flex; align-items: center; }
+        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; }
+        .navbar a.active { border-bottom: 2px solid var(--accent-color); padding-bottom: 4px; }
+        .navbar strong { font-size: 1.4rem; color: #ffffff; }
+        .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
+        .notification-link { position: relative; }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h2 { text-align: center; color: var(--primary-color); margin-bottom: 40px; }
+        .project-card { 
+            background: var(--main-bg); 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .project-card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .project-card-header img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+        .project-card-header a { color: var(--text-color-light); text-decoration: none; font-weight: 600; }
+        .project-card-content h3 { margin: 0 0 10px; color: var(--primary-color); font-size: 1.5rem; }
+        .project-card-content .description {
+            margin: 0 0 15px; color: var(--text-color-dark); line-height: 1.6;
+            overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+            -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+        }
+        .project-actions { margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px; }
+        .btn-apply, .btn-details { 
+            text-decoration: none; border: none; padding: 10px 20px; border-radius: 8px; 
+            cursor: pointer; font-size: 1rem; font-weight: 600; margin-right: 10px; display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .btn-apply { background: var(--button-blue); color: white; }
+        .btn-apply:hover { background: var(--button-hover-blue); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 230, 255, 0.3); }
+        .btn-details { background: var(--border-color); color: var(--text-color-light); }
+        .btn-details:hover { background: #444c56; transform: translateY(-2px); }
+        
+        #applyModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 2000; }
+        #applyModal .modal-box { background: var(--main-bg); padding: 30px; border-radius: 15px; width: 90%; max-width: 550px; position: relative; border: 1px solid var(--border-color); }
+        #applyModal .close-btn { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 1.8rem; color: var(--accent-color); }
+        #applyModal select, #applyModal input, #applyModal textarea { 
+            width: 100%; padding: 12px; margin: 10px 0 20px; border-radius: 8px; 
+            border: 1px solid var(--border-color); background: #24292f; color: var(--text-color-light); 
+            font-size: 16px; outline: none; box-sizing: border-box; 
+        }
+        .modal-notification { padding: 12px; border-radius: 8px; text-align: center; font-weight: 500; margin-top: 15px; display: none; opacity: 0; transition: opacity 0.4s ease; }
+        .modal-notification.show { display: block; opacity: 1; }
+        .modal-notification.success { background-color: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
+        .modal-notification.error { background-color: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
+        
+        @media (max-width: 850px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; flex-direction: column; width: 100%; position: fixed; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); padding: 10px 0; }
+            .nav-links.active { display: flex; }
+            .navbar a { margin: 10px 0; padding: 10px 0; text-align: center; width: 100%; border-bottom: none !important; }
+            .hamburger { display: block; }
+            .navbar a.active { background-color: rgba(0, 230, 255, 0.1); border-radius: 5px; width: 90%; margin: 5px auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="post-idea.html">Post Idea</a>
+            <a href="apply.html" class="active">Apply</a>
+            <a href="search.html">Search</a>
+            <a id="myProfileLink" href="#">My Profile</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="interview.html">Interview</a>
+            <a href="chat.html">Chat</a>
+            <a href="history.html">History</a>
+            <a href="help.html">Help & Support</a>
+            <a href="notifications.html" class="notification-link">Notifications<span id="notification-dot"></span></a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🚀 Find a Project to Join</h2>
+        <div id="projectList"><p>Loading projects...</p></div>
+    </div>
+
+    <div id="applyModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h3>Apply to Project</h3>
+            <label for="selectedRole">Select Role:</label>
+            <select id="selectedRole"></select>
+            <label for="applicantName">Your Name:</label>
+            <input id="applicantName" readonly>
+            <label for="applicantEmail">Your Email:</label>
+            <input id="applicantEmail" readonly>
+            <label for="applicationMessage">Message (optional):</label>
+            <textarea id="applicationMessage"></textarea>
+            <button class="btn-apply" id="submitAppButton" onclick="submitApplication()">Submit Application</button>
+            <div id="modalNotification" class="modal-notification"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const modalNotification = document.getElementById("modalNotification");
+        let userEmail = "", userName = "", currentUserId = "", selectedProjectId = "";
+        let appliedProjects = {};
+        let notificationTimeout;
+
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                currentUserId = user.uid;
+                userEmail = user.email;
+                userName = user.displayName || user.email;
+                document.getElementById('myProfileLink').href = `profile.html?uid=${user.uid}`;
+                listenForUnreadNotifications(user.uid);
+                
+                const appsSnap = await db.collection("applications").where("uid", "==", user.uid).get();
+                appsSnap.forEach(doc => { appliedProjects[doc.data().projectId] = true; });
+                findProjects();
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        async function findProjects() {
+            const projectList = document.getElementById("projectList");
+            projectList.innerHTML = "<p>Loading projects...</p>";
+            
+            const ideasSnap = await db.collection("ideas").orderBy("createdAt", "desc").get();
+            const creatorUIDs = [...new Set(ideasSnap.docs.map(doc => doc.data().uid).filter(Boolean))];
+            
+            if (creatorUIDs.length === 0) {
+                projectList.innerHTML = "<p>No projects available right now.</p>";
+                return;
+            }
+            
+            const creatorsSnap = await db.collection('users').where(firebase.firestore.FieldPath.documentId(), 'in', creatorUIDs).get();
+            const creatorsMap = new Map();
+            creatorsSnap.forEach(doc => creatorsMap.set(doc.id, doc.data()));
+
+            let content = '';
+            let projectsFound = false;
+            ideasSnap.forEach(doc => {
+                const project = doc.data();
+                const creator = creatorsMap.get(project.uid);
+                const roles = project.roles || {};
+                const hasVacancy = Object.values(roles).some(r => r > 0);
+
+                if (creator && project.uid !== currentUserId && hasVacancy && !appliedProjects[doc.id] && !project.completed) {
+                    projectsFound = true;
+                    content += `
+                        <div class="project-card">
+                            <div class="project-card-header">
+                                <img src="${creator.photoURL || 'https://placehold.co/40x40/161b22/00e6ff?text=' + creator.displayName.charAt(0)}" alt="${creator.displayName}">
+                                <a href="profile.html?uid=${project.uid}">${creator.displayName}</a>
+                            </div>
+                            <div class="project-card-content">
+                                <h3>${project.title}</h3>
+                                <p class="description">${project.description}</p>
+                                <div class="project-actions">
+                                    <a href="project-details.html?id=${doc.id}" class="btn-details">View Details</a>
+                                    <button class="btn-apply" onclick='openApplyModal("${doc.id}", ${JSON.stringify(roles)})'>Apply Now</button>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            });
+            projectList.innerHTML = projectsFound ? content : "<p>No available projects for you to join right now.</p>";
+        }
+
+        function openApplyModal(id, roles) {
+            selectedProjectId = id;
+            const roleSelect = document.getElementById("selectedRole");
+            roleSelect.innerHTML = "";
+            for (const r in roles) {
+                if (roles[r] > 0) {
+                    const opt = document.createElement("option");
+                    opt.value = r;
+                    opt.textContent = `${r} (${roles[r]} available)`;
+                    roleSelect.appendChild(opt);
+                }
+            }
+            document.getElementById("applicantName").value = userName;
+            document.getElementById("applicantEmail").value = userEmail;
+            document.getElementById("applicationMessage").value = "";
+            document.getElementById("applyModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("applyModal").style.display = "none";
+        }
+
+        async function submitApplication() {
+            const submitButton = document.getElementById('submitAppButton');
+            submitButton.disabled = true;
+            const role = document.getElementById("selectedRole").value;
+            if (!role) {
+                showNotification("Please select a role.", "error");
+                submitButton.disabled = false; return;
+            }
+
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const projectRef = db.collection("ideas").doc(selectedProjectId);
+                    const projectDoc = await transaction.get(projectRef);
+                    if (!projectDoc.exists) throw "Project no longer exists.";
+                    
+                    const projectData = projectDoc.data();
+                    const roles = projectData.roles || {};
+                    if (!roles[role] || roles[role] <= 0) throw "Selected role is no longer available.";
+
+                    const applicationRef = db.collection("applications").doc();
+                    transaction.set(applicationRef, {
+                        projectId: selectedProjectId, name: userName, email: userEmail, uid: currentUserId,
+                        message: document.getElementById("applicationMessage").value, role, status: "Pending",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    const notificationRef = db.collection('users').doc(projectData.uid).collection('notifications').doc();
+                    transaction.set(notificationRef, {
+                        senderName: userName, message: `has applied for the role of '${role}' in your project '${projectData.title}'.`,
+                        link: '/interview.html', read: false,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    roles[role] -= 1;
+                    transaction.update(projectRef, { roles });
+                });
+                showNotification("Application submitted successfully!", "success");
+                setTimeout(() => { closeModal(); findProjects(); }, 2000);
+            } catch (err) {
+                showNotification("Failed to submit. " + err, "error");
+            } finally {
+                submitButton.disabled = false;
+            }
+        }
+        
+        function showNotification(message, type) {
+            clearTimeout(notificationTimeout);
+            modalNotification.textContent = message;
+            modalNotification.className = `modal-notification ${type} show`;
+            notificationTimeout = setTimeout(() => {
+                modalNotification.classList.remove('show');
+            }, 4000);
+        }
+
+        function listenForUnreadNotifications(uid) {
+            const dot = document.getElementById('notification-dot');
+            db.collection('users').doc(uid).collection('notifications').where('read', '==', false)
+              .onSnapshot(snapshot => {
+                  if(dot) dot.style.display = snapshot.empty ? 'none' : 'block';
+              });
+        }
+
+        function logout() {
+            auth.signOut().then(() => { window.location.replace("login.html"); });
+        }
+
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

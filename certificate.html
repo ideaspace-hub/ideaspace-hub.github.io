@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --dark-text: #1a2238;
+            --light-text: #4a5568;
+            --background-color: #f7f7f7;
+            --border-color: #e0e0e0;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #0a0f24;
+            font-family: 'Roboto', sans-serif;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .certificate-wrapper {
+            width: 100%;
+            max-width: 1000px;
+        }
+        .certificate-container {
+            width: 1000px;
+            height: 707px; /* A4 Landscape ratio */
+            background-color: var(--background-color);
+            border: 10px solid; /* Color will be set by JS */
+            padding: 40px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            text-align: center;
+            position: relative;
+            transform: scale(var(--view-scale, 1));
+            transform-origin: top center;
+            transition: transform 0.3s ease;
+        }
+        .download-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .watermark::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('seal.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 45%;
+            opacity: 0.10;
+            z-index: 1;
+        }
+        .cert-header, .cert-body, .cert-footer {
+            position: relative;
+            z-index: 2;
+        }
+        .cert-header {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px;
+        }
+        .logo-img { width: 90px; height: auto; }
+        .cert-title {
+            color: var(--dark-text); font-size: 42px; font-weight: 700;
+            margin: 0; letter-spacing: 3px; text-transform: uppercase;
+        }
+        .cert-subtitle { color: var(--light-text); font-size: 18px; margin: 5px 0 0 0; }
+        .cert-body {
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 20px 0;
+        }
+        .recipient-name {
+            color: var(--primary-color); font-family: 'Playfair Display', serif; font-size: 50px;
+            font-weight: 700; margin: 0 0 25px 0;
+            border-bottom: 1px solid var(--primary-color); padding-bottom: 10px;
+        }
+        .award-text { color: var(--light-text); font-size: 18px; max-width: 650px; line-height: 1.7; }
+        .award-text strong { color: var(--dark-text); }
+        .tier-badge { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; padding: 5px 15px; border-radius: 5px; margin-top: 15px; display: inline-block; }
+        .cert-footer {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-top: 2px solid var(--border-color); padding-top: 20px;
+        }
+        .signature-block { position: relative; text-align: center; width: 250px; }
+        .signature-block .value {
+            font-weight: bold; font-size: 18px; color: var(--dark-text);
+            border-bottom: 1px solid var(--dark-text); padding-bottom: 4px;
+        }
+        .signature-block .label { font-size: 14px; color: var(--light-text); margin-top: 8px; }
+        .signature-font {
+            font-family: 'Dancing Script', cursive; font-size: 42px; line-height: 1;
+            border-bottom: 1px solid var(--dark-text); padding-bottom: 10px; margin-bottom: 0;
+        }
+        .seal-img {
+            position: absolute; width: 110px; height: auto;
+            top: 50%; left: 50%; transform: translate(-50%, -60%) rotate(-12deg); opacity: 0.75;
+        }
+        /* ### NEW: Tier Styles ### */
+        .silver { border-color: #c0c0c0; }
+        .silver .tier-badge { background: #c0c0c0; color: #333; }
+        .gold { border-color: #ffc107; }
+        .gold .tier-badge { background: #ffc107; color: #333; }
+        .platinum { border-color: #66ffff; box-shadow: 0 0 25px rgba(102, 255, 255, 0.5); }
+        .platinum .tier-badge { background: linear-gradient(45deg, #e5e4e2, #c0c0c0); color: #333; }
+
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; display: block; }
+            .cert-title { font-size: 28px; }
+            .recipient-name { font-size: 36px; }
+            .award-text { font-size: 14px; }
+            .signature-font { font-size: 32px; }
+            .seal-img { width: 80px; }
+            .signature-block .value { font-size: 14px; }
+            .signature-block .label { font-size: 12px; }
+            .download-btn { padding: 8px 12px; font-size: 14px; top: 10px; right: 10px;}
+        }
+
+        @media print {
+            body { padding: 0; background-color: white; }
+            .certificate-wrapper { max-width: none; }
+            .certificate-container { width: 297mm; height: 210mm; box-shadow: none; border: 1px solid #ccc; transform: scale(1) !important; margin: 0; }
+            .download-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate-wrapper" id="certWrapper">
+        <div id="certificate" class="certificate-container watermark">
+            <button class="download-btn" onclick="downloadImage()">Download as Image</button>
+
+            <header class="cert-header">
+                 <img src="CollabSpace Logo.png" alt="CollabSpace Logo" class="logo-img">
+                <h1 class="cert-title">Certificate of Completion</h1>
+            </header>
+
+            <main class="cert-body">
+                <p class="cert-subtitle">is hereby awarded to</p>
+                <h2 class="recipient-name" id="recipientName">Loading...</h2>
+                <p class="award-text">
+                    for outstanding contribution as <strong id="recipientRole">a valued member</strong> to the successful completion of the project titled <strong id="projectName">Loading...</strong>.
+                </p>
+                <div id="tierBadge"></div>
+            </main>
+
+            <footer class="cert-footer">
+                <div class="signature-block">
+                    <p class="value signature-font">Yashwanth</p>
+                    <p class="label">Founder, CollabSpace</p>
+                    <img src="seal.png" alt="Official Seal" class="seal-img">
+                </div>
+                <div class="signature-block">
+                    <p class="value" id="certificateId">Loading...</p>
+                    <p class="label">Certificate ID</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
+            authDomain: "collabspace-6d0af.firebaseapp.com",
+            projectId: "collabspace-6d0af"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        window.onload = () => {
+            loadCertificateData();
+            scaleCertificate();
+        };
+        window.addEventListener('resize', scaleCertificate);
+
+        async function loadCertificateData() {
+            const appId = new URLSearchParams(window.location.search).get('appId');
+            if (!appId) {
+                document.body.innerHTML = "<h1>Error: Application ID is missing.</h1>";
+                return;
+            }
+            try {
+                const appDoc = await db.collection('applications').doc(appId).get();
+                if (!appDoc.exists) throw new Error("Certificate data not found.");
+                const appData = appDoc.data();
+
+                const projectDoc = await db.collection('ideas').doc(appData.projectId).get();
+                if (!projectDoc.exists) throw new Error("Associated project not found.");
+                const projectData = projectDoc.data();
+
+                let userRole = appData.role;
+                if (appData.uid === projectData.uid) {
+                    userRole = "Project Lead";
+                }
+
+                document.getElementById('recipientName').textContent = appData.certificateName;
+                document.getElementById('projectName').textContent = `"${projectData.title}"`;
+                document.getElementById('recipientRole').textContent = userRole;
+                document.getElementById('certificateId').textContent = appData.certificateId;
+                
+                // ### NEW: Logic to add tier styling ###
+                const tier = appData.certificateTier || 'Silver';
+                document.getElementById('certificate').classList.add(tier.toLowerCase());
+                const tierBadge = document.getElementById('tierBadge');
+                tierBadge.textContent = `${tier} Certificate`;
+                tierBadge.className = `tier-badge`;
+
+            } catch (error) {
+                console.error("Error loading certificate data:", error);
+                document.body.innerHTML = `<h1>Error: ${error.message}</h1>`;
+            }
+        }
+
+        function scaleCertificate() {
+            const wrapper = document.getElementById('certWrapper');
+            const certificate = document.getElementById('certificate');
+            if (!wrapper || !certificate) return;
+            const certWidth = 1000;
+            const scale = Math.min(wrapper.offsetWidth / certWidth, 1);
+            certificate.style.setProperty('--view-scale', scale);
+        }
+
+        function downloadImage() {
+            const certElement = document.getElementById('certificate');
+            const downloadButton = certElement.querySelector('.download-btn');
+            downloadButton.style.display = 'none';
+
+            const originalScale = certElement.style.getPropertyValue('--view-scale');
+            certElement.style.setProperty('--view-scale', 1);
+
+            html2canvas(certElement, { 
+                scale: 2,
+                useCORS: true,
+                width: 1000,
+                height: 707
+            }).then(canvas => {
+                certElement.style.setProperty('--view-scale', originalScale);
+                downloadButton.style.display = 'block';
+
+                const imgData = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = 'CollabSpace_Certificate.png';
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
