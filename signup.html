@@ -12,7 +12,7 @@
       --dark-bg: #0d1117;
       --main-bg: #161b22;
       --border-color: #30363d;
-      --primary-color: #00e6ff; /* Teal/Cyan */
+      --primary-color: #00e6ff;
       --accent-color: #8affff;
       --text-color-light: #c9d1d9;
       --text-color-dark: #7d8590;
@@ -26,10 +26,9 @@
     body, html {
       margin: 0;
       padding: 0;
-      min-height: 100vh; /* Replaced height: 100% */
+      min-height: 100vh;
       font-family: 'Poppins', sans-serif;
       background: var(--dark-bg);
-      /* FIXED: Removed overflow: hidden; to allow scrolling */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -48,65 +47,6 @@
       color: var(--text-color-light);
       box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
       border: 1px solid var(--border-color);
-      min-height: auto;
-    }
-    
-    .profile-pic-container {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .profile-pic-label {
-        display: block;
-        cursor: pointer;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        margin: 0 auto;
-        background: #24292f;
-        border: 2px dashed var(--border-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.3s ease;
-    }
-    .profile-pic-label:hover {
-        background: #30363d;
-        border-color: var(--primary-color);
-    }
-    .profile-pic-label img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 2px solid var(--primary-color);
-    }
-    .profile-pic-label .icon {
-        font-size: 3rem;
-        color: var(--accent-color);
-    }
-    #profilePicInput {
-        display: none;
-    }
-
-    @keyframes zoomIn {
-        from { transform: scale(0.5); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-    .success-animation {
-        text-align: center;
-        animation: zoomIn 0.5s ease-out forwards;
-    }
-    .success-animation .icon {
-        font-size: 60px;
-        color: var(--success-color);
-        line-height: 1;
-    }
-    .success-animation h3 {
-        color: var(--primary-color);
-        margin: 20px 0 10px;
-    }
-     .success-animation p {
-        color: var(--text-color-dark);
     }
 
     h2 {
@@ -115,6 +55,7 @@
       color: var(--primary-color);
       font-size: 2.2rem;
     }
+
     input[type="text"], input[type="email"], input[type="password"], textarea {
       width: 100%;
       padding: 14px;
@@ -127,31 +68,28 @@
       outline: none;
       transition: all 0.3s ease;
     }
+
     textarea {
         resize: vertical;
         min-height: 80px;
     }
+
     input::placeholder, textarea::placeholder {
       color: var(--text-color-dark);
     }
+
     input:focus, textarea:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 10px rgba(0, 230, 255, 0.5);
     }
-     input.error {
-        border-color: var(--error-color);
-        box-shadow: 0 0 10px rgba(248, 81, 73, 0.5);
-    }
-    input.success {
-        border-color: var(--success-color);
-        box-shadow: 0 0 10px rgba(35, 134, 54, 0.5);
-    }
+
     .username-status {
         font-size: 14px;
         margin-top: -5px;
         margin-bottom: 10px;
         height: 18px;
     }
+
     .username-status .taken { color: var(--error-color); }
     .username-status .available { color: var(--success-color); }
     .username-status .suggestions { font-size: 13px; color: var(--accent-color); cursor: pointer; }
@@ -171,25 +109,30 @@
       transition: all 0.3s ease;
       box-shadow: 0 5px 15px rgba(0, 230, 255, 0.2);
     }
+
     button:hover {
       background: var(--button-hover-blue);
       transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0, 230, 255, 0.4);
     }
+
     button:disabled {
         background: var(--border-color);
         cursor: not-allowed;
         transform: none;
     }
+
     a {
       color: var(--primary-color);
       text-decoration: none;
       transition: color 0.2s ease;
     }
+
     a:hover {
       color: var(--accent-color);
       text-decoration: underline;
     }
+
     .terms {
       display: flex;
       align-items: center;
@@ -197,18 +140,20 @@
       font-size: 15px;
       color: var(--text-color-dark);
     }
+
     .terms input[type="checkbox"] {
       margin-right: 12px;
       transform: scale(1.2);
       accent-color: var(--primary-color);
     }
+
     .center-text {
       text-align: center;
       margin-top: 15px;
       font-size: 15px;
       color: var(--text-color-dark);
     }
-    
+
     .notification {
         position: absolute;
         bottom: -70px;
@@ -223,11 +168,13 @@
         visibility: hidden;
         transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
     }
+
     .notification.show {
         opacity: 1;
         visibility: visible;
         bottom: -80px;
     }
+
     .notification.error {
         background-color: var(--error-color);
         color: white;
@@ -240,13 +187,6 @@
 <div class="glass-container" id="signupContainer">
   <form id="signupForm">
     <h2>Create Account</h2>
-    
-    <div class="profile-pic-container">
-        <label for="profilePicInput" class="profile-pic-label" id="profilePicLabel">
-            <span class="icon fas fa-camera"></span>
-        </label>
-        <input type="file" id="profilePicInput" accept="image/*">
-    </div>
 
     <input type="text" id="name" placeholder="Full Name" required />
     <input type="text" id="username" placeholder="Username (unique)" required />
@@ -271,7 +211,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
@@ -279,12 +218,9 @@
     projectId: "collabspace-6d0af",
     storageBucket: "collabspace-6d0af.appspot.com"
   };
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
-  const storage = firebase.storage();
 
   const signupContainer = document.getElementById("signupContainer");
   const signupForm = document.getElementById("signupForm");
@@ -292,119 +228,88 @@
   const notificationBox = document.getElementById("notificationBox");
   const usernameInput = document.getElementById("username");
   const usernameStatus = document.getElementById("usernameStatus");
-  const profilePicInput = document.getElementById("profilePicInput");
-  const profilePicLabel = document.getElementById("profilePicLabel");
   let notificationTimeout;
   let isUsernameAvailable = false;
   let debounceTimeout;
-  let profilePicFile = null;
-  
+
   function showNotification(message, type) {
-      clearTimeout(notificationTimeout);
-      notificationBox.textContent = message;
-      notificationBox.className = `notification ${type} show`;
-      notificationTimeout = setTimeout(() => {
-          notificationBox.classList.remove('show');
-      }, 4000);
+    clearTimeout(notificationTimeout);
+    notificationBox.textContent = message;
+    notificationBox.className = `notification ${type} show`;
+    notificationTimeout = setTimeout(() => {
+      notificationBox.classList.remove('show');
+    }, 4000);
   }
 
-  profilePicInput.addEventListener('change', (e) => {
-      profilePicFile = e.target.files[0];
-      if (profilePicFile) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-              profilePicLabel.innerHTML = `<img src="${event.target.result}" alt="Profile Preview">`;
-          }
-          reader.readAsDataURL(profilePicFile);
-      }
-  });
-
   usernameInput.addEventListener('input', () => {
-      clearTimeout(debounceTimeout);
-      const username = usernameInput.value.trim().toLowerCase();
-      usernameInput.classList.remove('success', 'error');
-      usernameStatus.innerHTML = '';
-      isUsernameAvailable = false;
+    clearTimeout(debounceTimeout);
+    const username = usernameInput.value.trim().toLowerCase();
+    usernameInput.classList.remove('success', 'error');
+    usernameStatus.innerHTML = '';
+    isUsernameAvailable = false;
 
-      if (username.length < 3) {
-          usernameStatus.innerHTML = '<span class="taken">Username must be at least 3 characters.</span>';
-          return;
-      }
-      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-          usernameStatus.innerHTML = '<span class="taken">Only letters, numbers, and underscores allowed.</span>';
-          return;
-      }
+    if (username.length < 3) {
+      usernameStatus.innerHTML = '<span class="taken">Username must be at least 3 characters.</span>';
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      usernameStatus.innerHTML = '<span class="taken">Only letters, numbers, and underscores allowed.</span>';
+      return;
+    }
 
-      debounceTimeout = setTimeout(async () => {
-          const docRef = db.collection("usernames").doc(username);
-          const doc = await docRef.get();
-          if (doc.exists) {
-              usernameInput.classList.add('error');
-              isUsernameAvailable = false;
-              const suggestions = await getUsernameSuggestions(username);
-              usernameStatus.innerHTML = `<span class="taken">Username is taken.</span> <div class="suggestions">Try: ${suggestions.map(s => `<span onclick="useSuggestion('${s}')">${s}</span>`).join(', ')}</div>`;
-          } else {
-              usernameInput.classList.add('success');
-              usernameStatus.innerHTML = '<span class="available">Username is available!</span>';
-              isUsernameAvailable = true;
-          }
-      }, 500);
+    debounceTimeout = setTimeout(async () => {
+      const docRef = db.collection("usernames").doc(username);
+      const doc = await docRef.get();
+      if (doc.exists) {
+        usernameInput.classList.add('error');
+        isUsernameAvailable = false;
+        const suggestions = await getUsernameSuggestions(username);
+        usernameStatus.innerHTML = `<span class="taken">Username is taken.</span> 
+          <div class="suggestions">Try: ${suggestions.map(s => `<span onclick="useSuggestion('${s}')">${s}</span>`).join(', ')}</div>`;
+      } else {
+        usernameInput.classList.add('success');
+        usernameStatus.innerHTML = '<span class="available">Username is available!</span>';
+        isUsernameAvailable = true;
+      }
+    }, 500);
   });
 
   async function getUsernameSuggestions(baseUsername) {
-      let suggestions = [];
-      for(let i = 0; i < 3; i++) {
-          const suffix = Math.floor(Math.random() * 100);
-          const newUsername = `${baseUsername}${suffix}`;
-          const doc = await db.collection("usernames").doc(newUsername).get();
-          if(!doc.exists) {
-              suggestions.push(newUsername);
-          }
-      }
-      return suggestions.slice(0, 2); // Show max 2 suggestions
-  }
-  
-  function useSuggestion(suggestion) {
-      usernameInput.value = suggestion;
-      usernameInput.dispatchEvent(new Event('input'));
+    let suggestions = [];
+    for(let i = 0; i < 3; i++) {
+      const suffix = Math.floor(Math.random() * 100);
+      const newUsername = `${baseUsername}${suffix}`;
+      const doc = await db.collection("usernames").doc(newUsername).get();
+      if(!doc.exists) suggestions.push(newUsername);
+    }
+    return suggestions.slice(0, 2);
   }
 
+  function useSuggestion(suggestion) {
+    usernameInput.value = suggestion;
+    usernameInput.dispatchEvent(new Event('input'));
+  }
 
   signupForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      signupUser();
+    e.preventDefault();
+    signupUser();
   });
 
   async function signupUser() {
-    const nameInput = document.getElementById("name");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const bioInput = document.getElementById("bio");
-    const termsBox = document.getElementById("termsBox");
-
-    const name = nameInput.value.trim();
+    const name = document.getElementById("name").value.trim();
     const username = usernameInput.value.trim().toLowerCase();
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const bio = bioInput.value.trim();
-    const agreed = termsBox.checked;
-
-    nameInput.classList.remove("error");
-    emailInput.classList.remove("error");
-    passwordInput.classList.remove("error");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const bio = document.getElementById("bio").value.trim();
+    const agreed = document.getElementById("termsBox").checked;
 
     if (!name || !email || !password || !username) {
       showNotification("❗ Please fill in all required fields.", "error");
-      if (!name) nameInput.classList.add("error");
-      if (!email) emailInput.classList.add("error");
-      if (!password) passwordInput.classList.add("error");
-      if (!username) usernameInput.classList.add("error");
       return;
     }
     if (!isUsernameAvailable) {
-        showNotification("❗ Please choose an available username.", "error");
-        usernameInput.classList.add("error");
-        return;
+      showNotification("❗ Please choose an available username.", "error");
+      return;
     }
     if (!agreed) {
       showNotification("❗ You must agree to the Terms and Conditions.", "error");
@@ -415,65 +320,40 @@
     signupButton.textContent = "Creating Account...";
 
     try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
 
-        let photoURL = '';
-        if (profilePicFile) {
-            const storageRef = storage.ref(`profile_pictures/${user.uid}/${profilePicFile.name}`);
-            const snapshot = await storageRef.put(profilePicFile);
-            photoURL = await snapshot.ref.getDownloadURL();
-        }
+      await user.updateProfile({ displayName: name });
 
-        // 1. Update Firebase Auth profile
-        await user.updateProfile({
-            displayName: name,
-            photoURL: photoURL
-        });
+      await db.collection("users").doc(user.uid).set({
+        uid: user.uid,
+        username,
+        displayName: name,
+        email,
+        bio,
+        photoURL: '',
+        followers: [],
+        following: []
+      });
 
-        // 2. Create user document in Firestore
-        await db.collection("users").doc(user.uid).set({
-            uid: user.uid,
-            username: username,
-            displayName: name,
-            email: email,
-            bio: bio,
-            photoURL: photoURL,
-            followers: [],
-            following: []
-        });
+      await db.collection("usernames").doc(username).set({ uid: user.uid });
 
-        // 3. Reserve the username
-        await db.collection("usernames").doc(username).set({
-            uid: user.uid
-        });
+      await user.sendEmailVerification();
 
-        // 4. Send verification email
-        await user.sendEmailVerification();
-
-        signupContainer.innerHTML = `
-            <div class="success-animation">
-                <div class="icon">✓</div>
-                <h3>Account Created!</h3>
-                <p>A verification email has been sent to <strong>${email}</strong>. Please check your inbox to continue.</p>
-            </div>
-        `;
-        setTimeout(() => {
-            window.location.href = "login.html";
-        }, 5000);
-
+      signupContainer.innerHTML = `
+        <div class="success-animation">
+          <div class="icon">✓</div>
+          <h3>Account Created!</h3>
+          <p>A verification email has been sent to <strong>${email}</strong>. Please check your inbox to continue.</p>
+        </div>
+      `;
+      setTimeout(() => window.location.href = "login.html", 5000);
     } catch (error) {
-        handleError(error);
+      showNotification("❌ " + error.message, "error");
+      signupButton.disabled = false;
+      signupButton.textContent = "Sign Up";
     }
   }
-
-  function handleError(error) {
-    console.error("Signup Error:", error);
-    showNotification("❌ " + error.message, "error");
-    signupButton.disabled = false;
-    signupButton.textContent = "Sign Up";
-  }
 </script>
-
 </body>
 </html>
