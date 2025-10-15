@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile - CollabSpace</title>
-    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
@@ -138,7 +137,7 @@
 <body>
 
 <div class="navbar">
-    <div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+    <div><strong>🌟 CollabSpace</strong></div>
     <div class="nav-links" id="navLinks">
         <a href="index.html">Home</a>
         <a href="post-idea.html">Post Idea</a>
@@ -161,12 +160,12 @@
 <div class="container">
     <h2>Edit Your Profile</h2>
     <form id="editProfileForm">
-        <div class="profile-pic-container">
+    <!--   <div class="profile-pic-container">
             <label for="profilePicInput" class="profile-pic-label" id="profilePicLabel">
                 <img id="profilePicPreview" src="https://placehold.co/120x120/161b22/00e6ff?text=?" alt="Profile Preview">
             </label>
             <input type="file" id="profilePicInput" accept="image/*">
-        </div>
+        </div> -->
 
         <label for="displayName">Display Name</label>
         <input type="text" id="displayName" required>
@@ -197,7 +196,9 @@
         projectId: "collabspace-6d0af",
         storageBucket: "collabspace-6d0af.appspot.com"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
     const auth = firebase.auth();
     const storage = firebase.storage();
@@ -326,15 +327,6 @@
         }, 3000);
     }
 
-    function listenForUnreadNotifications(uid) {
-        const dot = document.getElementById('notification-dot');
-        if (!dot) return;
-        db.collection('users').doc(uid).collection('notifications')
-          .where('read', '==', false)
-          .onSnapshot(snapshot => {
-              dot.style.display = snapshot.empty ? 'none' : 'block';
-          }, console.error);
-    }
     function logout() { auth.signOut().then(() => window.location.replace("/login.html")); }
     function toggleMenu() { document.getElementById("navLinks").classList.toggle("active"); }
 </script>
