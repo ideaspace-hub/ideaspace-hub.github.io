@@ -4,91 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Details - CollabSpace</title>
-    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        :root {
-            --dark-bg: #0d1117;
-            --main-bg: #161b22;
-            --border-color: #30363d;
-            --primary-color: #00e6ff; /* Teal/Cyan */
-            --accent-color: #8affff;
-            --text-color-light: #c9d1d9;
-            --text-color-dark: #7d8590;
-            --success-color: #238636;
-            --error-color: #f85149;
-            --button-blue: linear-gradient(45deg, #00e6ff, #0077ff);
-            --button-hover-blue: linear-gradient(45deg, #00c0e0, #0056b3);
-        }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--dark-bg); color: var(--text-color-light); padding-top: 70px; }
-        .navbar { background: rgba(22, 27, 34, 0.8); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        body { margin: 0; font-family: 'Roboto', sans-serif; background: #0a0f24; color: #e0e0e0; }
+        .navbar { background: rgba(10, 15, 36, 0.8); color: white; padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
         .nav-links { display: flex; align-items: center; }
-        .navbar a { color: var(--primary-color); text-decoration: none; margin-left: 25px; font-weight: 500; }
+        .navbar a { color: #8affff; text-decoration: none; margin-left: 25px; font-weight: 500; }
         .navbar strong { font-size: 1.4rem; color: #ffffff; }
         .hamburger { display: none; cursor: pointer; font-size: 24px; color: white; }
         .notification-link { position: relative; }
-        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid var(--dark-bg); }
-        .container { max-width: 900px; margin: 40px auto; background: var(--main-bg); padding: 40px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid var(--border-color); }
-        h2 { text-align: center; margin-bottom: 30px; color: var(--primary-color); font-size: 2.2rem; }
-        h3 { color: var(--accent-color); margin-top: 25px; margin-bottom: 15px; font-size: 1.8rem; }
-        .section { margin-bottom: 35px; padding-bottom: 20px; border-bottom: 1px solid rgba(0, 230, 255, 0.1); }
+        #notification-dot { display: none; position: absolute; top: -2px; right: -12px; width: 8px; height: 8px; background-color: #ff4d4d; border-radius: 50%; border: 1px solid #0a0f24; }
+        .container { max-width: 900px; margin: 40px auto; background: rgba(10, 15, 36, 0.75); padding: 40px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        h2 { text-align: center; margin-bottom: 30px; color: #66ffff; font-size: 2.2rem; }
+        h3 { color: #8affff; margin-top: 25px; margin-bottom: 15px; font-size: 1.8rem; }
+        .section { margin-bottom: 35px; padding-bottom: 20px; border-bottom: 1px solid rgba(102, 255, 255, 0.1); }
         .section:last-child { border-bottom: none; margin-bottom: 0; }
-        .member { background: #24292f; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .member-info strong { color: var(--primary-color); }
+        .member { background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(102, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .member-info strong { color: #66ffff; }
         .member-actions button { margin-left: 10px; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; border: none; }
         .btn-report { background-color: #ffc107; color: #000; }
-        .btn-remove { background-color: var(--error-color); color: #fff; }
+        .btn-remove { background-color: #dc3545; color: #fff; }
         .warning-status { font-size: 0.8rem; color: #ffc107; font-style: italic; }
-        button, .view-cert-btn, .btn-apply, .status-text { 
-            padding: 12px 25px; background: var(--button-blue); color: white; font-size: 17px; font-weight: 600; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 230, 255, 0.3); margin-top: 10px; text-decoration: none; display: inline-block; 
-        }
-        .status-text { background: var(--border-color); color: var(--text-color-dark); cursor: default; box-shadow: none; }
-        button:hover, .view-cert-btn:hover, .btn-apply:hover { background: var(--button-hover-blue); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0, 230, 255, 0.5); }
-        button:disabled { background: var(--border-color); cursor: not-allowed; transform: none; box-shadow: none; }
+        button, .view-cert-btn, .btn-apply, .status-text { padding: 12px 25px; background: linear-gradient(45deg, #007bff, #00c0ff); color: white; font-size: 17px; font-weight: 600; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); margin-top: 10px; text-decoration: none; display: inline-block; }
+        .status-text { background: #555; cursor: default; box-shadow: none; }
+        button:hover, .view-cert-btn:hover, .btn-apply:hover { background: linear-gradient(45deg, #0056b3, #008fcc); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0, 123, 255, 0.5); }
+        button:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
         .completed-banner { color: #28a745; font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; text-align: center; background-color: rgba(40, 167, 69, 0.1); padding: 10px; border-radius: 8px; border: 1px solid #28a745; display: none; }
         .notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
         .notification.show { opacity: 1; visibility: visible; bottom: 30px; }
         .notification.success { background-color: #28a745; }
-        .notification.error { background-color: var(--error-color); }
+        .notification.error { background-color: #dc3545; }
         #confirmModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; }
-        .confirm-modal-content { background: var(--main-bg); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border-color); }
+        .confirm-modal-content { background: rgba(10, 15, 36, 0.9); padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
         .confirm-modal-content .button-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        .btn-confirm { background: #28a745; }
-        .btn-cancel { background: #6c757d; }
-        .help-link { display: block; text-align: right; font-size: 0.9rem; color: var(--primary-color); text-decoration: none; margin-top: 5px; }
+        .btn-confirm { background: linear-gradient(45deg, #28a745, #218838); }
+        .btn-cancel { background: linear-gradient(45deg, #6c757d, #5a6268); }
+        .help-link { display: block; text-align: right; font-size: 0.9rem; color: #8affff; text-decoration: none; margin-top: 5px; }
         .help-link:hover { text-decoration: underline; }
         .interview-info { background: rgba(0, 123, 255, 0.1); border: 1px solid #007bff; padding: 15px; border-radius: 8px; margin-top: 20px; }
         .interview-info p { margin: 5px 0; }
         .join-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
-        .upgrade-form {
-            background: #24292f;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        .upgrade-form p { color: var(--text-color-dark); margin-top: 0; }
-        .upgrade-form input { 
-            width: 100%; padding: 10px; 
-            background: var(--dark-bg); color: var(--text-color-light);
-            border: 1px solid var(--border-color); border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        .upgrade-form button {
-            width: 100%;
-            margin-top: 10px;
-        }
-        @media (max-width: 850px) { .nav-links { display: none; flex-direction: column; width: 100%; position: absolute; top: 65px; left: 0; background: rgba(22, 27, 34, 0.95); } .nav-links.active { display: flex; } .hamburger { display: block; } }
+        .upgrade-form { background: #24292f; padding: 20px; border-radius: 10px; border: 1px solid rgba(102, 255, 255, 0.2); margin-top: 15px; display: flex; flex-direction: column; }
+        .upgrade-form p { color: #c0c0c0; margin-top: 0; }
+        .upgrade-form input { width: 100%; padding: 10px; background: #0a0f24; color: #e0e0e0; border: 1px solid rgba(102, 255, 255, 0.3); border-radius: 5px; box-sizing: border-box; margin-bottom: 10px; }
+        .upgrade-form button { width: 100%; margin-top: 10px; }
+        @media (max-width: 850px) { .nav-links { display: none; flex-direction: column; width: 100%; position: absolute; top: 70px; left: 0; background: rgba(10, 15, 36, 0.95); } .nav-links.active { display: flex; } .hamburger { display: block; } }
     </style>
 </head>
 <body>
     <div class="navbar">
-<div><strong><a href="index.html">🌟CollabSpace</a></strong></div>
+        <div><strong>🌟 CollabSpace</strong></div>
         <div class="nav-links" id="navLinks">
             <a href="index.html">Home</a>
             <a href="post-idea.html" >Post Idea</a>
@@ -144,8 +111,8 @@
     <div id="notification" class="notification"></div>
     
     <div id="applyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 2000;">
-        <div style="background: var(--main-bg); padding: 30px; border-radius: 15px; width: 90%; max-width: 550px; position: relative; border: 1px solid var(--border-color);">
-            <span onclick="closeModal()" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 1.8rem; color: var(--accent-color);">&times;</span>
+        <div style="background: rgba(10, 15, 36, 0.95); padding: 30px; border-radius: 15px; width: 90%; max-width: 550px; position: relative;">
+            <span onclick="closeModal()" style="position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 1.8rem; color: #66ffff;">&times;</span>
             <h3>Apply to Project</h3>
             <label for="selectedRole">Select Role:</label>
             <select id="selectedRole" style="width: 100%; padding: 12px; margin-bottom: 20px;"></select>
@@ -161,9 +128,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script>
         const firebaseConfig = { apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8", authDomain: "collabspace-6d0af.firebaseapp.com", projectId: "collabspace-6d0af" };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const projectId = new URLSearchParams(window.location.search).get("id");
@@ -248,23 +213,25 @@
                         verificationSection.style.display = 'block';
                         const verificationContent = document.getElementById('verificationContent');
                         const attempts = projectData.verificationAttempts || 0;
-                        const upgradeAttempts = projectData.upgradeAttempts || 0;
-                        
-                        const appSnap = await db.collection('applications').where('projectId', '==', projectId).where('uid', '==', currentUser.uid).limit(1).get();
-                        let appId, appData;
-                        let currentTier = 'Uncertified';
-                        
+
+                        // ### START OF CRITICAL FIX ###
+                        const appSnap = await db.collection('applications').where('projectId', '==', projectId).where('uid', '==', currentUser.uid).where('status', '==', 'Accepted').limit(1).get();
+                        let appId = 'creator'; // Default ID for project owner (who might not be in applications)
+                        let appData = {};
+                        let tier = 'Uncertified';
+
                         if (!appSnap.empty) {
                             appId = appSnap.docs[0].id;
                             appData = appSnap.docs[0].data();
-                            currentTier = appData.certificateTier || 'Uncertified';
-                        } else if (isCreator) { 
-                            appId = 'creator';
-                            if (projectData.certificateTier) {
-                                currentTier = projectData.certificateTier;
-                            }
+                            tier = appData.certificateTier || 'Silver'; // Set tier to Silver if approved but tier field is missing
                         }
-
+                        
+                        // Fallback for owner if they are not in the application list but have been verified
+                        if (isCreator && !appData.certificateTier && projectData.certificateTier) {
+                            tier = projectData.certificateTier;
+                        }
+                        // ### END OF CRITICAL FIX ###
+                        
                         switch (projectData.verificationStatus) {
                             case 'unsubmitted':
                             case 'rejected':
@@ -278,7 +245,7 @@
                                         <button onclick="submitForVerification(event)" style="margin-top:15px;">Submit for Verification</button>
                                     `;
                                 } else {
-                                    verificationContent.innerHTML = '<p style="color:var(--error-color);">You have used all verification attempts for this project.</p>';
+                                    verificationContent.innerHTML = '<p style="color:#dc3545;">You have used all verification attempts for this project.</p>';
                                 }
                                 break;
                             case 'pending':
@@ -296,52 +263,27 @@
                                 verificationContent.innerHTML = pendingHTML;
                                 break;
                             case 'approved':
-                                const requestedTier = projectData.requestedTier;
-                                let upgradeButtonHTML = '';
-                                
-                                if (projectData.upgradeRequestStatus === 'pending') {
-                                    upgradeButtonHTML = `<p style="color:#ffc107;">Your upgrade request is pending admin review.</p>`;
-                                } else if (currentTier === 'Silver' && (projectData.upgradeAttempts || 0) < 3) {
-                                    upgradeButtonHTML = `<p>Improve your project to apply for a Gold certificate.</p><p>Attempts remaining: <strong>${3 - (projectData.upgradeAttempts || 0)}</strong></p><button id="upgradeGoldBtn" onclick="showUpgradeForm('Gold')">Apply for Gold Upgrade</button>`;
-                                } else if (currentTier === 'Gold' && (projectData.upgradeAttempts || 0) < 3) {
-                                    upgradeButtonHTML = `<p>Improve your project to apply for a Platinum certificate.</p><p>Attempts remaining: <strong>${3 - (projectData.upgradeAttempts || 0)}</strong></p><button id="upgradePlatinumBtn" onclick="showUpgradeForm('Platinum')">Apply for Platinum Upgrade</button>`;
-                                } else if (currentTier === 'Platinum') {
-                                    upgradeButtonHTML = `<p style="color:var(--primary-color);">🏆 You have the highest certificate tier!</p>`;
-                                } else if ((projectData.upgradeAttempts || 0) >= 3) {
-                                    upgradeButtonHTML = `<p style="color:var(--error-color);">You have used all upgrade attempts for this project.</p>`;
+                                // This block handles the name input and certificate generation
+                                if (appData.certificateId) {
+                                    // Certificate already generated, show view/upgrade options
+                                    let upgradeHTML = '';
+                                    if (projectData.upgradeRequestStatus === 'pending') {
+                                        upgradeHTML = `<p style="color:#ffc107;">Your upgrade request is pending admin review.</p>`;
+                                    } else if (tier === 'Silver') {
+                                        upgradeHTML = `<p>Improve your project to apply for a Gold certificate.</p><button onclick="openUpgradeModal('Gold')">Apply for Gold Upgrade</button>`;
+                                    } else if (tier === 'Gold') {
+                                        upgradeHTML = `<p>Improve your project to apply for a Platinum certificate.</p><button onclick="openUpgradeModal('Platinum')">Apply for Platinum Upgrade</button>`;
+                                    } else {
+                                        upgradeHTML = `<p style="color:#66ffff;">🏆 You have the highest certificate tier!</p>`;
+                                    }
+                                    verificationContent.innerHTML = `<p style="font-weight:bold;">You earned a <span style="color:${getTierColor(tier)};">${tier} Certificate</span>!</p><a href="certificate.html?appId=${appId}" class="view-cert-btn">View Certificate</a><div style="margin-top: 20px;">${upgradeHTML}</div>`;
+                                } else {
+                                    // Certificate approved but name not entered, show input box
+                                    verificationContent.innerHTML = `<p style="color:#28a745;font-weight:bold;">Project Verified!</p><p>Enter name as it should appear on your certificate:</p><input type="text" id="certName" value="${currentUser.displayName}"><button onclick="generateCertificate('${appId}')">Generate Certificate</button>`;
                                 }
-
-                                verificationContent.innerHTML = `
-                                    <p style="font-weight:bold;">You earned a <span style="color:${getTierColor(currentTier)};">${currentTier} Certificate</span>!</p>
-                                    <a href="certificate.html?appId=${appId}" class="view-cert-btn">View Certificate</a>
-                                    <div id="upgradeSection" style="margin-top: 20px;">
-                                        ${upgradeButtonHTML}
-                                        <div id="upgradeFormContainer"></div>
-                                    </div>
-                                `;
-
                                 break;
                             case 'failed':
-                                verificationContent.innerHTML = '<p style="color:var(--error-color);">Unfortunately, you have used all verification attempts for this project.</p>';
-                                break;
-                            case 'upgrade_rejected':
-                                const requestedTier_rej = projectData.requestedTier;
-                                const upgradeAttempts_rej = projectData.upgradeAttempts || 0;
-                                let upgradeButtonHTML_rej = '';
-                                if (upgradeAttempts_rej < 3) {
-                                    upgradeButtonHTML_rej = `<button onclick="showUpgradeForm('${requestedTier_rej}')">Resubmit for ${requestedTier_rej} Upgrade</button>`;
-                                }
-                                verificationContent.innerHTML = `
-                                    <p style="color:#ffc107;"><strong>Upgrade Rejected.</strong> Attempts remaining: <strong>${3 - upgradeAttempts_rej}</strong></p>
-                                    <p><strong>Admin Feedback:</strong> ${projectData.adminFeedback || 'None provided.'}</p>
-                                    <div id="upgradeSection">
-                                        ${upgradeButtonHTML_rej}
-                                        <div id="upgradeFormContainer"></div>
-                                    </div>
-                                `;
-                                break;
-                            case 'upgrade_failed':
-                                verificationContent.innerHTML = '<p style="color:var(--error-color);">You have used all upgrade attempts for this project.</p>';
+                                verificationContent.innerHTML = '<p style="color:#dc3545;">Unfortunately, you have used all verification attempts for this project.</p>';
                                 break;
                             default:
                                 if (isCreator) {
@@ -377,36 +319,21 @@
         function getTierColor(tier) {
             if (tier === 'Gold') return '#ffc107'; if (tier === 'Platinum') return '#e5e4e2'; return '#c0c0c0';
         }
-
-        function showUpgradeForm(requestedTier) {
-            const upgradeSection = document.getElementById('upgradeSection');
-            upgradeSection.innerHTML = `
-                <div class="upgrade-form">
-                    <p>Enter the new GitHub link for your **${requestedTier}** certificate submission.</p>
-                    <input type="text" id="upgradeRepoUrl" placeholder="https://github.com/your-username/your-repo">
-                    <button class="btn-apply" onclick="submitUpgradeRequest(document.getElementById('upgradeRepoUrl').value, '${requestedTier}')">Submit Upgrade</button>
-                </div>
-            `;
-        }
         
+        function openUpgradeModal(requestedTier) {
+            const newRepoLink = prompt(`To apply for a ${requestedTier} certificate, provide the new GitHub link with your updated project:`);
+            if (newRepoLink && newRepoLink.startsWith('http')) submitUpgradeRequest(newRepoLink, requestedTier);
+            else if (newRepoLink) alert("Please enter a valid URL.");
+        }
+
         async function submitUpgradeRequest(repoLink, tier) {
-            if (!repoLink || !repoLink.startsWith('http')) {
-                return alert("Please enter a valid URL.");
-            }
             try {
-                const projectRef = db.collection('ideas').doc(projectId);
-                const projectDoc = await projectRef.get();
-                const upgradeAttempts = (projectDoc.data().upgradeAttempts || 0) + 1;
-                const newStatus = (upgradeAttempts >= 3) ? 'upgrade_failed' : 'pending';
-                
-                await projectRef.update({
-                    upgradeRequestStatus: newStatus, upgradeRequestUrl: repoLink, requestedTier: tier, upgradeAttempts: upgradeAttempts
+                await db.collection('ideas').doc(projectId).update({
+                    upgradeRequestStatus: 'pending', upgradeRequestUrl: repoLink, requestedTier: tier
                 });
                 alert("Upgrade request submitted!");
                 loadProject();
-            } catch (error) { 
-                alert("Failed to submit request."); 
-            }
+            } catch (error) { alert("Failed to submit request."); }
         }
         
         async function reportInactive(appId, reportedUid, reportedUserName) {
