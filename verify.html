@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification - CollabSpace</title>
+    <title>Action Confirmation - CollabSpace</title>
+    <link rel="icon" type="image/png" href="CollabSpace Logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
@@ -42,10 +43,9 @@
             box-shadow: 0 0 25px rgba(0,0,0,0.4);
         }
 
-        .container h1 {
+        .container h1, .container h2 {
             color: var(--primary-color);
             margin-bottom: 20px;
-            font-size: 2.2rem;
         }
 
         .container p {
@@ -54,6 +54,33 @@
             color: var(--text-color-dark);
             margin-bottom: 30px;
         }
+
+        /* --- STYLES ADDED FROM reset-password.html --- */
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border: 1px solid var(--border-color); 
+            background: #24292f; 
+            color: var(--text-color-light); 
+            box-sizing: border-box; 
+        }
+        
+        button { 
+            padding: 12px 25px; 
+            margin-top: 15px; 
+            cursor: pointer; 
+            background: var(--button-blue); 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        /* --- End of added styles --- */
+
 
         .message-box {
             padding: 20px;
@@ -101,10 +128,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>CollabSpace Email Verification</h1>
-        <div id="message" class="message-box active">
-            <i class="fas fa-spinner fa-spin"></i> Verifying your email, please wait...
+        <div id="reset-form" style="display: none;">
+            <h2>Reset Your Password</h2>
+            <p>Enter a new password for your account.</p>
+            <input type="password" id="newPassword" placeholder="New Password">
+            <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+            <button id="resetButton">Save New Password</button>
         </div>
+
+        <div id="messageBox" class="message-box active">
+            <i class="fas fa-spinner fa-spin"></i> Loading, please wait...
+        </div>
+
         <a id="loginButton" href="login.html" class="login-btn">Go to Login</a>
     </div>
 
@@ -115,10 +150,6 @@
             apiKey: "AIzaSyBbTWt0dpw7w6mFJB2yF0olTCh2mBDwbn8",
             authDomain: "collabspace-6d0af.firebaseapp.com",
             projectId: "collabspace-6d0af",
-            storageBucket: "collabspace-6d0af.firebasestorage.app",
-            messagingSenderId: "19918134739",
-            appId: "1:19918134739:web:3c3e2046024466dd2ea326",
-            measurementId: "G-31K3YSWDYP"
         };
 
         if (!firebase.apps.length) {
@@ -129,23 +160,93 @@
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         const oobCode = urlParams.get('oobCode');
-        const messageBox = document.getElementById('message');
+        
+        // Get all UI elements
+        const messageBox = document.getElementById('messageBox');
         const loginButton = document.getElementById('loginButton');
+        const resetForm = document.getElementById('reset-form');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const resetButton = document.getElementById('resetButton');
 
-        if (mode === 'verifyEmail' && oobCode) {
+        // Main logic "director"
+        window.onload = () => {
+            if (!oobCode) {
+                showMessage("Invalid or missing action code.", "error");
+                return;
+            }
+
+            if (mode === 'verifyEmail') {
+                handleVerifyEmail();
+            } else if (mode === 'resetPassword') {
+                handlePasswordReset();
+            } else {
+                showMessage("Invalid action link.", "error");
+            }
+        };
+
+        // --- Logic for Email Verification ---
+        function handleVerifyEmail() {
+            messageBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying your email...';
+            
             auth.applyActionCode(oobCode)
                 .then(() => {
-                    messageBox.innerHTML = "✅ Your email has been verified successfully!";
-                    messageBox.className = "message-box active success";
+                    showMessage("✅ Your email has been verified successfully!", "success");
                     loginButton.style.display = 'block';
                 })
                 .catch((error) => {
-                    messageBox.innerHTML = `❌ Verification failed: ${error.message}`;
-                    messageBox.className = "message-box active error";
+                    showMessage(`❌ Verification failed: ${error.message}`, "error");
                 });
-        } else {
-            messageBox.innerHTML = "⚠️ Invalid verification link.";
-            messageBox.className = "message-box active error";
+        }
+
+        // --- Logic for Password Reset ---
+        function handlePasswordReset() {
+            // First, check if the code is valid
+            auth.verifyPasswordResetCode(oobCode)
+                .then((email) => {
+                    // Code is valid, show the reset form
+                    messageBox.style.display = 'none';
+                    resetForm.style.display = 'block';
+                    resetForm.querySelector('p').textContent = `Enter a new password for ${email}.`;
+                })
+                .catch((error) => {
+                    // Code is invalid or expired
+                    showMessage(`❌ This password reset link is invalid or has expired.`, "error");
+                });
+            
+            // Add listener to the reset button
+            resetButton.addEventListener('click', () => {
+                const newPassword = newPasswordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (newPassword.length < 6) {
+                    alert('Password must be at least 6 characters long.');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    alert('Passwords do not match.');
+                    return;
+                }
+
+                // Code is valid, now confirm the reset
+                auth.confirmPasswordReset(oobCode, newPassword)
+                    .then(() => {
+                        resetForm.style.display = 'none';
+                        showMessage('✅ Your password has been successfully reset. You can now log in.', 'success');
+                        loginButton.style.display = 'block';
+                    })
+                    .catch((error) => {
+                        resetForm.style.display = 'none';
+                        showMessage(`❌ Error: ${error.message}`, 'error');
+                    });
+            });
+        }
+
+        // Helper function to show messages
+        function showMessage(message, type) {
+            messageBox.innerHTML = message;
+            messageBox.className = `message-box active ${type}`;
+            messageBox.style.display = 'block';
         }
     </script>
 </body>
